@@ -1,0 +1,3132 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2d7d5a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Fit Takip">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Beslenme ve Antrenman Takibi</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --soft: #fbfcfa;
+      --ink: #24302d;
+      --muted: #68716e;
+      --line: #dfe5df;
+      --green: #2d7d5a;
+      --green-2: #e4f3eb;
+      --blue: #315f9f;
+      --blue-2: #e8eef8;
+      --teal: #16827c;
+      --teal-2: #def4f1;
+      --amber: #b46a21;
+      --amber-2: #fff1df;
+      --coral: #c85d4a;
+      --coral-2: #fde9e4;
+      --red: #b2433f;
+      --red-2: #f8e8e6;
+      --purple: #7857a8;
+      --purple-2: #efe8fb;
+      --rose: #b64f7a;
+      --rose-2: #fae7f0;
+      --chart-1: #2d7d5a;
+      --chart-2: #315f9f;
+      --chart-3: #b46a21;
+      --chart-4: #7857a8;
+      --chart-5: #16827c;
+      --chart-6: #c85d4a;
+      --shadow: 0 16px 42px rgba(36, 48, 45, 0.09);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #151917;
+      --panel: #202622;
+      --soft: #252d28;
+      --ink: #edf2ed;
+      --muted: #a8b3ad;
+      --line: #38433d;
+      --green: #69b98d;
+      --green-2: #20372c;
+      --blue: #8ab1ef;
+      --blue-2: #223046;
+      --teal: #66c8c0;
+      --teal-2: #1d3d3a;
+      --amber: #e1a85d;
+      --amber-2: #3f2f1d;
+      --coral: #f19480;
+      --coral-2: #452a25;
+      --red: #ef8d88;
+      --red-2: #402928;
+      --purple: #b69add;
+      --purple-2: #332842;
+      --rose: #e58ab0;
+      --rose-2: #432735;
+      --chart-1: #69b98d;
+      --chart-2: #8ab1ef;
+      --chart-3: #e1a85d;
+      --chart-4: #b69add;
+      --chart-5: #66c8c0;
+      --chart-6: #f19480;
+      --shadow: 0 16px 42px rgba(0, 0, 0, 0.26);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .app-shell {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-end;
+      padding: 8px 0 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .date-pill, .tabs, .panel, .metric, .mini-card, .chart-card, .calendar-day, .pr-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .date-pill {
+      flex: 0 0 auto;
+      padding: 12px 14px;
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 5px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      min-height: 42px;
+      border: 0;
+      border-radius: 7px;
+      padding: 0 14px;
+      cursor: pointer;
+      color: var(--muted);
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    .tab.active {
+      color: #fff;
+      background: var(--green);
+    }
+
+    .tab[data-tab="supplement"].active { background: var(--purple); }
+    .tab[data-tab="workout"].active { background: var(--blue); }
+
+    .mode { display: none; }
+    .mode.active { display: block; }
+
+    .twin-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .twin-status::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--rose);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--rose-2) 75%, transparent);
+    }
+
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--amber-2);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--amber-2) 56%, var(--panel));
+    }
+
+    .score-value {
+      flex: 0 0 auto;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--amber);
+      border: 7px solid var(--amber);
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .score-hero h3 { margin: 0; font-size: 1rem; }
+    .score-hero p { margin: 5px 0 0; color: var(--muted); line-height: 1.45; font-size: 0.88rem; }
+    .decision-list { display: grid; gap: 10px; }
+    .decision-card { padding: 14px; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 7px; background: var(--soft); }
+    .decision-card h3 { margin: 0; font-size: 0.95rem; }
+    .decision-meta { margin: 6px 0 10px; color: var(--amber); font-size: 0.78rem; font-weight: 800; }
+    .decision-card p { margin: 6px 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+    .decision-card p strong { color: var(--ink); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 390px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack { display: grid; gap: 18px; }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding: 18px 18px 14px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.25;
+    }
+
+    .panel-body { padding: 18px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.2;
+    }
+
+    label.full { grid-column: 1 / -1; }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px 11px;
+      background: var(--soft);
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45, 125, 90, 0.16);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 42px;
+      border: 0;
+      border-radius: 7px;
+      padding: 0 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--ink);
+      background: color-mix(in srgb, var(--line) 65%, transparent);
+      transition: transform 140ms ease, background 140ms ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { flex: 1; background: var(--green); color: #fff; }
+    #supplementMode .btn.primary { background: var(--purple); }
+
+    .food-helper {
+      grid-column: 1 / -1;
+      padding: 12px;
+      border: 1px solid var(--teal-2);
+      border-radius: 7px;
+      background: color-mix(in srgb, var(--teal-2) 48%, var(--panel));
+    }
+
+    .food-helper .btn { width: 100%; background: var(--teal); color: #fff; }
+
+    .food-matches {
+      display: grid;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .food-match {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .food-match small { color: var(--muted); white-space: nowrap; }
+
+    .food-manager { margin-top: 14px; }
+    .food-manager[hidden] { display: none; }
+    .food-manager-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .food-manager-actions .btn { flex: 1; }
+    .food-manager-list { display: grid; gap: 7px; margin-top: 10px; max-height: 270px; overflow-y: auto; }
+    .food-manager-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
+    .food-manager-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .food-manager-row small { display: block; color: var(--muted); margin-top: 2px; }
+    .food-manager-row button { flex: 0 0 auto; min-height: 32px; border: 0; border-radius: 6px; padding: 0 10px; cursor: pointer; color: var(--red); background: var(--red-2); font-weight: 700; }
+
+    .field-hint {
+      display: block;
+      min-height: 1.3em;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .save-food-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--ink);
+      font-size: 0.84rem;
+    }
+
+    .save-food-toggle input {
+      width: 18px;
+      min-height: 18px;
+      margin: 0;
+      accent-color: var(--green);
+    }
+    #workoutMode .btn.primary { background: var(--blue); }
+    .btn.danger { background: var(--red-2); color: var(--red); }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-grid.wide { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .metric {
+      min-height: 98px;
+      padding: 14px;
+      background: var(--soft);
+      box-shadow: none;
+      border-top: 4px solid var(--chart-1);
+    }
+
+    .summary-grid .metric:nth-child(2) { border-top-color: var(--chart-2); background: color-mix(in srgb, var(--blue-2) 44%, var(--soft)); }
+    .summary-grid .metric:nth-child(3) { border-top-color: var(--chart-3); background: color-mix(in srgb, var(--amber-2) 48%, var(--soft)); }
+    .summary-grid .metric:nth-child(4) { border-top-color: var(--chart-4); background: color-mix(in srgb, var(--purple-2) 48%, var(--soft)); }
+    .summary-grid .metric:nth-child(5) { border-top-color: var(--chart-5); background: color-mix(in srgb, var(--teal-2) 48%, var(--soft)); }
+    .summary-grid .metric:nth-child(6) { border-top-color: var(--chart-6); background: color-mix(in srgb, var(--coral-2) 48%, var(--soft)); }
+    .summary-grid .metric:nth-child(7) { border-top-color: var(--rose); background: color-mix(in srgb, var(--rose-2) 48%, var(--soft)); }
+    .summary-grid .metric:nth-child(8) { border-top-color: var(--green); background: color-mix(in srgb, var(--green-2) 48%, var(--soft)); }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(1.28rem, 2vw, 1.85rem);
+      line-height: 1;
+      word-break: break-word;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+    }
+
+    .insight {
+      border: 1px solid color-mix(in srgb, var(--green) 35%, var(--line));
+      border-radius: 8px;
+      background: var(--green-2);
+      color: var(--ink);
+      padding: 14px 15px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .insight.blue {
+      border-color: color-mix(in srgb, var(--blue) 35%, var(--line));
+      background: var(--blue-2);
+    }
+
+    .panel:nth-of-type(2n) .panel-header {
+      border-top: 3px solid color-mix(in srgb, var(--blue) 70%, transparent);
+    }
+
+    .stack > .panel:nth-child(3n) .panel-header,
+    .section-grid .panel:nth-child(2) .panel-header {
+      border-top: 3px solid color-mix(in srgb, var(--amber) 72%, transparent);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      background: var(--soft);
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .empty {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+      padding: 28px;
+    }
+
+    .strong { font-weight: 800; color: var(--ink); }
+
+    .mini-btn {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 7px;
+      background: var(--red-2);
+      color: var(--red);
+      cursor: pointer;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .edit-btn {
+      background: var(--blue-2);
+      color: var(--blue);
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 7px;
+      justify-content: flex-end;
+    }
+
+    .preset-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .preset {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 7px;
+      cursor: pointer;
+      color: var(--ink);
+      padding: 8px 10px;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .preset:hover {
+      border-color: var(--green);
+      background: var(--green-2);
+    }
+
+    .preset:nth-child(3n + 2):hover {
+      border-color: var(--blue);
+      background: var(--blue-2);
+    }
+
+    .preset:nth-child(3n):hover {
+      border-color: var(--amber);
+      background: var(--amber-2);
+    }
+
+    .note {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-card, .chart-card, .pr-card {
+      box-shadow: none;
+      background: var(--soft);
+      padding: 14px;
+    }
+
+    .mini-card {
+      border-left: 4px solid var(--green);
+    }
+
+    .mini-card:nth-child(2) { border-left-color: var(--amber); background: color-mix(in srgb, var(--amber-2) 44%, var(--soft)); }
+    .mini-card:nth-child(3) { border-left-color: var(--blue); background: color-mix(in srgb, var(--blue-2) 44%, var(--soft)); }
+
+    .chart-card {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--blue-2) 32%, transparent), transparent 62%),
+        var(--soft);
+    }
+
+    .mini-card span, .pr-card span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      display: block;
+    }
+
+    .mini-card strong, .pr-card strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 1.12rem;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      gap: 7px;
+    }
+
+    .bar-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 7px;
+      background: color-mix(in srgb, var(--line) 70%, transparent);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      min-width: 4px;
+      height: 100%;
+      border-radius: 7px;
+      background: var(--green);
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .calendar-head {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .calendar-day {
+      min-height: 72px;
+      padding: 8px;
+      box-shadow: none;
+      cursor: pointer;
+      background: var(--soft);
+    }
+
+    .calendar-day:hover { border-color: var(--green); }
+    .calendar-day.active {
+      outline: 3px solid color-mix(in srgb, var(--blue) 28%, transparent);
+      border-color: var(--blue);
+      background: color-mix(in srgb, var(--blue-2) 62%, var(--soft));
+    }
+    .calendar-day.muted { opacity: 0.45; }
+    .calendar-day strong { display: block; font-size: 0.88rem; }
+    .calendar-day span { display: block; margin-top: 8px; color: var(--muted); font-size: 0.72rem; line-height: 1.25; }
+
+    .chart {
+      width: 100%;
+      height: 170px;
+      display: block;
+    }
+
+    .weekly-days {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .day-chip {
+      min-height: 92px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--soft);
+      border-top: 4px solid var(--chart-1);
+    }
+
+    .day-chip:nth-child(2) { border-top-color: var(--chart-2); }
+    .day-chip:nth-child(3) { border-top-color: var(--chart-3); }
+    .day-chip:nth-child(4) { border-top-color: var(--chart-4); }
+    .day-chip:nth-child(5) { border-top-color: var(--chart-5); }
+    .day-chip:nth-child(6) { border-top-color: var(--chart-6); }
+    .day-chip:nth-child(7) { border-top-color: var(--rose); }
+
+    .day-chip strong { display: block; font-size: 0.84rem; }
+    .day-chip span { display: block; margin-top: 8px; color: var(--muted); font-size: 0.78rem; line-height: 1.25; }
+
+    .pr-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .pr-card {
+      border-left: 4px solid var(--purple);
+    }
+
+    .pr-card:nth-child(2n) { border-left-color: var(--coral); background: color-mix(in srgb, var(--coral-2) 38%, var(--soft)); }
+    .pr-card:nth-child(3n) { border-left-color: var(--teal); background: color-mix(in srgb, var(--teal-2) 38%, var(--soft)); }
+
+    .inline-select {
+      max-width: 280px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 980px) {
+      header { display: block; }
+      .top-actions { justify-content: flex-start; margin-top: 16px; }
+      .layout, .section-grid { grid-template-columns: 1fr; }
+      .summary-grid, .summary-grid.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .weekly-days { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding-bottom: calc(92px + env(safe-area-inset-bottom));
+      }
+
+      .app-shell {
+        width: min(100% - 20px, 1220px);
+        padding: 14px 0 112px;
+      }
+
+      header {
+        padding: 4px 0 14px;
+      }
+
+      h1 {
+        font-size: 2.15rem;
+        line-height: 1.02;
+      }
+
+      .subtitle {
+        margin-top: 9px;
+        font-size: 0.92rem;
+        line-height: 1.42;
+      }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 48px 48px;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      #profileToggle,
+      #themeToggle {
+        width: 48px;
+        min-width: 48px;
+        padding: 0;
+        font-size: 0;
+      }
+
+      #profileToggle .icon,
+      #themeToggle .icon { width: 20px; height: 20px; }
+
+      .date-pill {
+        min-height: 44px;
+        padding: 10px 11px;
+        display: flex;
+        align-items: center;
+      }
+
+      .tabs {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: calc(8px + env(safe-area-inset-bottom));
+        z-index: 30;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 5px;
+        padding: 6px;
+        margin: 0;
+        border-radius: 16px;
+        box-shadow: 0 18px 50px rgba(36, 48, 45, 0.22);
+        overflow: visible;
+      }
+
+      .tab {
+        min-height: 58px;
+        padding: 5px 3px;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.68rem;
+        line-height: 1.05;
+      }
+
+      .tab .icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .panel {
+        border-radius: 10px;
+      }
+
+      .score-hero { gap: 11px; padding: 11px; align-items: flex-start; }
+      .score-value { width: 62px; height: 62px; border-width: 5px; font-size: 1rem; }
+      .score-hero h3 { font-size: 0.92rem; }
+      .score-hero p { font-size: 0.8rem; line-height: 1.35; }
+      .decision-card { padding: 11px; }
+      .decision-card p { font-size: 0.8rem; }
+
+      .panel-header {
+        padding: 14px 14px 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .panel-title {
+        font-size: 0.98rem;
+      }
+
+      .panel-body {
+        padding: 14px;
+      }
+
+      .layout,
+      .section-grid,
+      .stack {
+        gap: 14px;
+      }
+
+      .form-grid, .preset-list, .mini-grid, .pr-list {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid,
+      .summary-grid.wide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        margin-bottom: 14px;
+      }
+
+      .metric {
+        min-height: 88px;
+        padding: 11px;
+      }
+
+      .metric span {
+        font-size: 0.76rem;
+      }
+
+      .metric strong {
+        font-size: 1.28rem;
+      }
+
+      input,
+      select,
+      textarea,
+      .btn {
+        min-height: 48px;
+      }
+
+      .button-row { flex-direction: column; }
+
+      .btn {
+        width: 100%;
+      }
+
+      .mini-btn {
+        width: 42px;
+        height: 42px;
+      }
+
+      .insight {
+        padding: 12px;
+        margin-bottom: 14px;
+        font-size: 0.9rem;
+      }
+
+      .table-wrap {
+        border: 0;
+        overflow: visible;
+      }
+
+      table,
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--soft);
+        margin-bottom: 10px;
+        overflow: hidden;
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        min-height: 42px;
+        padding: 10px 12px;
+        white-space: normal;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+      }
+
+      td::before {
+        content: "";
+        flex: 0 0 auto;
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-align: left;
+      }
+
+      #tableWrap td:first-child,
+      #supplementTableWrap td:first-child,
+      #workoutTableWrap td:first-child {
+        display: block;
+        text-align: left;
+        font-size: 1rem;
+        background: color-mix(in srgb, var(--green-2) 38%, var(--soft));
+      }
+
+      #tableWrap td:first-child::before,
+      #supplementTableWrap td:first-child::before,
+      #workoutTableWrap td:first-child::before {
+        display: none;
+      }
+
+      #homeRecentWrap td:nth-child(1)::before { content: "Tür"; }
+      #homeRecentWrap td:nth-child(2)::before { content: "Kayıt"; }
+      #homeRecentWrap td:nth-child(3)::before { content: "Tarih"; }
+      #homeRecentWrap td:nth-child(4)::before { content: "Detay"; }
+
+      #tableWrap td:nth-child(1)::before { content: "Besin"; }
+      #tableWrap td:nth-child(2)::before { content: "Kalori"; }
+      #tableWrap td:nth-child(3)::before { content: "Protein"; }
+      #tableWrap td:nth-child(4)::before { content: "Karbonhidrat"; }
+      #tableWrap td:nth-child(5)::before { content: "Yağ"; }
+
+      #supplementTableWrap td:nth-child(1)::before { content: "Ad"; }
+      #supplementTableWrap td:nth-child(2)::before { content: "Kategori"; }
+      #supplementTableWrap td:nth-child(3)::before { content: "Doz"; }
+      #supplementTableWrap td:nth-child(4)::before { content: "Zaman"; }
+      #supplementTableWrap td:nth-child(5)::before { content: "Not"; }
+
+      #workoutTableWrap td:nth-child(1)::before { content: "Hareket"; }
+      #workoutTableWrap td:nth-child(2)::before { content: "Kas"; }
+      #workoutTableWrap td:nth-child(3)::before { content: "Set"; }
+      #workoutTableWrap td:nth-child(4)::before { content: "Tekrar"; }
+      #workoutTableWrap td:nth-child(5)::before { content: "Kg"; }
+      #workoutTableWrap td:nth-child(6)::before { content: "Volume"; }
+      #workoutTableWrap td:nth-child(7)::before { content: "Not"; }
+
+      td:last-child {
+        border-bottom: 0;
+        justify-content: flex-end;
+      }
+
+      td:last-child::before {
+        display: none;
+      }
+
+      .row-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .empty {
+        min-height: 150px;
+        padding: 18px;
+      }
+
+      .calendar { gap: 5px; }
+      .calendar-day { min-height: 54px; padding: 5px; }
+      .calendar-day strong { font-size: 0.78rem; }
+      .calendar-day span {
+        margin-top: 4px;
+        font-size: 0.62rem;
+      }
+      .weekly-days { grid-template-columns: 1fr 1fr; }
+
+      .day-chip {
+        min-height: 78px;
+      }
+
+      .chart {
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 560px) and (min-height: 760px) {
+      body {
+        min-height: 100svh;
+      }
+
+      .app-shell {
+        min-height: 100svh;
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding-bottom: 8px;
+      }
+
+      h1 {
+        font-size: 1.42rem;
+      }
+
+      .subtitle {
+        display: none;
+      }
+
+      .top-actions {
+        margin-top: 0;
+      }
+
+      .date-pill,
+      .top-actions .btn {
+        min-height: 38px;
+        font-size: 0.78rem;
+      }
+
+      #profileToggle,
+      #themeToggle { min-height: 38px; font-size: 0; }
+
+      .tabs {
+        bottom: calc(6px + env(safe-area-inset-bottom));
+      }
+
+      .tab {
+        min-height: 52px;
+      }
+
+      .tab .icon {
+        width: 18px;
+        height: 18px;
+      }
+
+      #dashboardMode .stack {
+        gap: 8px;
+      }
+
+      #dashboardMode .panel-header {
+        display: none;
+      }
+
+      #dashboardMode .panel-body {
+        padding: 9px;
+      }
+
+      #dashboardMode .score-hero { padding: 8px; }
+      #dashboardMode .decision-list { gap: 6px; }
+      #dashboardMode .decision-card { padding: 8px; }
+      #dashboardMode .decision-card p { display: none; }
+      #dashboardMode .decision-card h3 { font-size: 0.78rem; }
+      #dashboardMode .decision-meta { margin: 4px 0 0; font-size: 0.68rem; }
+
+      #dashboardMode .summary-grid.wide {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      #dashboardMode .metric {
+        min-height: 58px;
+        padding: 7px;
+      }
+
+      #dashboardMode .metric span {
+        font-size: 0.62rem;
+      }
+
+      #dashboardMode .metric strong {
+        margin-top: 4px;
+        font-size: 0.92rem;
+      }
+
+      #dashboardMode .metric small {
+        margin-top: 3px;
+        font-size: 0.62rem;
+      }
+
+      #dashboardMode .insight {
+        min-height: 0;
+        max-height: 46px;
+        padding: 8px;
+        margin-bottom: 0;
+        overflow: hidden;
+        font-size: 0.72rem;
+        line-height: 1.3;
+      }
+
+      #dashboardMode .section-grid {
+        gap: 8px;
+      }
+
+      #homeTodayCards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      #homeTodayCards .mini-card {
+        padding: 8px;
+        min-height: 62px;
+      }
+
+      #homeTodayCards .mini-card span {
+        font-size: 0.62rem;
+      }
+
+      #homeTodayCards .mini-card strong {
+        margin-top: 4px;
+        font-size: 0.84rem;
+      }
+
+      #homeRecentWrap tr {
+        display: grid;
+        grid-template-columns: 58px 1fr;
+        gap: 0;
+        margin-bottom: 5px;
+      }
+
+      #homeRecentWrap td {
+        min-height: 0;
+        padding: 5px 7px;
+        border-bottom: 0;
+        font-size: 0.68rem;
+        text-align: left;
+        justify-content: flex-start;
+      }
+
+      #homeRecentWrap td::before {
+        display: none;
+      }
+
+      #homeRecentWrap td:nth-child(1) {
+        grid-row: span 2;
+        display: flex;
+        align-items: center;
+        color: var(--muted);
+        font-weight: 800;
+        background: color-mix(in srgb, var(--line) 42%, transparent);
+      }
+
+      #homeRecentWrap td:nth-child(2) {
+        font-weight: 800;
+      }
+
+      #homeRecentWrap td:nth-child(3),
+      #homeRecentWrap td:nth-child(4) {
+        color: var(--muted);
+      }
+
+      #homeRecentWrap td:nth-child(3) {
+        display: none;
+      }
+
+      #homeRecentWrap td:nth-child(4) {
+        padding-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header>
+      <div>
+        <h1>Beslenme ve Antrenman</h1>
+        <p class="subtitle">Günlük besin değerlerini ve antrenman hacmini aynı yerde takip et. Yorumlar istatistiksel ve bilgilendirme amaçlıdır; tıbbi tavsiye değildir.</p>
+      </div>
+      <div class="top-actions">
+        <div class="date-pill" id="todayLabel"></div>
+        <button class="btn" type="button" id="profileToggle" title="Profili aç" aria-label="Profili aç">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>
+        </button>
+        <button class="btn" type="button" id="themeToggle" title="Tema değiştir">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="4"/></svg>
+          Tema
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Uygulama sekmeleri">
+      <button class="tab active" type="button" data-tab="dashboard">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9ZM14 20h6V4h-6v16ZM4 20h6v-3H4v3Z"/></svg>
+        Dashboard
+      </button>
+      <button class="tab" type="button" data-tab="nutrition">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16M5 11l1 8h12l1-8M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Beslenme
+      </button>
+      <button class="tab" type="button" data-tab="supplement">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 21h4M8 3h8v5a4 4 0 0 1-8 0V3ZM8 8h8M12 12v9"/></svg>
+        Supplement
+      </button>
+      <button class="tab" type="button" data-tab="workout">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg>
+        Antrenman
+      </button>
+    </nav>
+
+    <section class="mode active" id="dashboardMode">
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-header"><h2 class="panel-title">Günün AI Koçu</h2><span class="twin-status">Veri destekli analiz</span></div>
+          <div class="panel-body">
+            <div class="score-hero">
+              <div class="score-value" id="dashboardPerformanceScore">—</div>
+              <div><h3 id="dashboardCoachTitle">Bugünün odağı hazırlanıyor</h3><p id="dashboardCoachMessage"></p></div>
+            </div>
+            <div class="decision-list" id="dashboardDecisionList" style="margin-top: 12px"></div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><h2 class="panel-title">Bugünün genel dashboard’u</h2></div>
+          <div class="panel-body">
+            <div class="summary-grid wide" id="homeDashboardCards"></div>
+            <div class="insight" id="homeDashboardInsight"></div>
+          </div>
+        </section>
+
+        <section class="section-grid">
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Bugünkü kayıtlar</h2></div>
+            <div class="panel-body">
+              <div class="mini-grid" id="homeTodayCards"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Son aktiviteler</h2></div>
+            <div class="panel-body">
+              <div class="table-wrap" id="homeRecentWrap">
+                <table>
+                  <thead><tr><th>Tür</th><th>Kayıt</th><th>Tarih</th><th>Detay</th></tr></thead>
+                  <tbody id="homeRecentRows"></tbody>
+                </table>
+              </div>
+              <div class="empty" id="homeRecentEmpty">Henüz kayıt yok.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="mode" id="profileMode">
+      <div class="layout">
+        <aside class="panel">
+          <div class="panel-header"><h2 class="panel-title">Profil</h2><button class="btn" type="button" id="closeProfile">Geri</button></div>
+          <div class="panel-body">
+            <form id="profileForm">
+              <div class="form-grid">
+                <label>Boy<input id="profileHeight" type="number" min="100" max="250" step="0.1" placeholder="cm"></label>
+                <label>Kilo<input id="profileWeight" type="number" min="25" max="350" step="0.1" placeholder="kg"></label>
+                <label>Yaş<input id="profileAge" type="number" min="13" max="120" step="1"></label>
+                <label>Cinsiyet<select id="profileSex"><option value="">Belirtmek istemiyorum</option><option value="Kadın">Kadın</option><option value="Erkek">Erkek</option><option value="Diğer">Diğer</option></select></label>
+                <label>Yağ oranı<input id="profileBodyFat" type="number" min="0" max="70" step="0.1" placeholder="%"></label>
+                <label>Kas oranı<input id="profileMuscleMass" type="number" min="0" max="100" step="0.1" placeholder="%"></label>
+                <label class="full">Hedef<select id="profileGoal"><option value="">Seçiniz</option><option value="Yağ kaybı">Yağ kaybı</option><option value="Kas kazanımı">Kas kazanımı</option><option value="Performans">Performans</option><option value="Koruma">Koruma</option></select></label>
+                <label class="full">Aktivite seviyesi<select id="profileActivity"><option value="">Seçiniz</option><option value="Düşük">Düşük</option><option value="Hafif aktif">Hafif aktif</option><option value="Orta aktif">Orta aktif</option><option value="Yüksek aktif">Yüksek aktif</option></select></label>
+              </div>
+              <div class="button-row"><button class="btn primary" type="submit">Profili kaydet</button></div>
+            </form>
+          </div>
+        </aside>
+
+        <section class="stack">
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Günlük sinyaller</h2><span class="twin-status">Günlük takip</span></div>
+            <div class="panel-body">
+              <form id="bodySignalForm">
+                <div class="form-grid">
+                  <label class="full">Tarih<input id="bodySignalDate" type="date" required></label>
+                  <label>Su<input id="signalWater" type="number" min="0" step="0.1" placeholder="litre"></label>
+                  <label>Uyku<input id="signalSleep" type="number" min="0" max="24" step="0.1" placeholder="saat"></label>
+                  <label>Adım<input id="signalSteps" type="number" min="0" step="1" placeholder="adet"></label>
+                  <label>Yakılan kalori<input id="signalBurnedCalories" type="number" min="0" step="1" placeholder="kcal"></label>
+                  <label>Nabız<input id="signalHeartRate" type="number" min="0" step="1" placeholder="dinlenik bpm"></label>
+                  <label>HRV<input id="signalHrv" type="number" min="0" step="1" placeholder="ms"></label>
+                </div>
+                <div class="button-row"><button class="btn primary" type="submit">Günlük sinyali kaydet</button></div>
+              </form>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </section>
+
+    <section class="mode" id="nutritionMode">
+      <div class="layout">
+        <aside class="panel">
+          <div class="panel-header"><h2 class="panel-title">Besin ekle</h2></div>
+          <div class="panel-body">
+            <form id="foodForm">
+              <div class="form-grid">
+                <label class="full">Tarih<input id="foodDate" type="date" required></label>
+                <label class="full">Hazır besin<select id="presetSelect"><option value="">Manuel giriş</option></select></label>
+                <label class="full">Besin adı<input id="name" type="text" placeholder="Örn. Yoğurt" required></label>
+                <div class="food-helper full">
+                  <button class="btn" type="button" id="suggestNutrition" title="Olası besinleri göster">Olası Besinleri Göster</button>
+                  <p class="field-hint" id="nutritionSuggestionStatus">Besin adını yaz, olası seçeneklerden birini seç ve miktarı ayrı gir.</p>
+                  <div class="food-matches" id="foodMatches" aria-live="polite"></div>
+                </div>
+                <label>Miktar<input id="foodAmount" type="number" min="0.1" step="0.1" placeholder="Örn. 300"></label>
+                <label>Birim<select id="foodUnit"><option value="g">g</option><option value="ml">ml</option><option value="porsiyon">porsiyon</option><option value="adet">adet</option><option value="dilim">dilim</option></select></label>
+                <label>Kalori<input id="calories" type="number" min="0" step="1" placeholder="kcal" required></label>
+                <label>Protein<input id="protein" type="number" min="0" step="0.1" placeholder="g" required></label>
+                <label>Karbonhidrat<input id="carbs" type="number" min="0" step="0.1" placeholder="g" required></label>
+                <label>Yağ<input id="fat" type="number" min="0" step="0.1" placeholder="g" required></label>
+              </div>
+              <label class="save-food-toggle"><input id="saveCustomFood" type="checkbox">Bu besini kendi listeme kaydet</label>
+              <div class="button-row">
+                <button class="btn primary" type="submit" id="foodSubmit" title="Listeye ekle"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ekle</button>
+                <button class="btn" type="button" id="clearForm" title="Formu temizle"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14h10l1-14"/></svg>Temizle</button>
+              </div>
+            </form>
+            <div class="food-manager">
+              <button class="btn" type="button" id="toggleFoodManager">Besin Listesini Düzenle</button>
+              <div id="foodManager" hidden>
+                <input id="foodManagerSearch" type="search" placeholder="Listede ara">
+                <div class="food-manager-list" id="foodManagerList"></div>
+                <div class="food-manager-actions">
+                  <button class="btn" type="button" id="restoreHiddenFoods">Gizlenenleri geri getir</button>
+                </div>
+              </div>
+            </div>
+            <p class="note">Öneriler yaklaşık değerlerdir; paketli ürünlerde etiketteki değerleri kontrol et. Kaydettiğin özel besinler sonraki girişlerde listenin başında yer alır.</p>
+            <div class="preset-list" id="presetList" aria-label="Hızlı besinler"></div>
+          </div>
+        </aside>
+
+        <section class="stack">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Seçili gün özeti</h2>
+              <button class="btn danger" type="button" id="resetDay" title="Günü sıfırla"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14h10l1-14"/></svg>Sıfırla</button>
+            </div>
+            <div class="panel-body">
+              <div class="summary-grid" aria-live="polite">
+                <div class="metric"><span>Kalori</span><strong id="totalCalories">0</strong><small>kcal</small></div>
+                <div class="metric"><span>Protein</span><strong id="totalProtein">0</strong><small>gram</small></div>
+                <div class="metric"><span>Karbonhidrat</span><strong id="totalCarbs">0</strong><small>gram</small></div>
+                <div class="metric"><span>Yağ</span><strong id="totalFat">0</strong><small>gram</small></div>
+              </div>
+              <div class="insight" id="insight"></div>
+              <div class="table-wrap" id="tableWrap">
+                <table>
+                  <thead><tr><th>Besin</th><th>Kalori</th><th>Protein</th><th>Karbonhidrat</th><th>Yağ</th><th></th></tr></thead>
+                  <tbody id="foodRows"></tbody>
+                </table>
+              </div>
+              <div class="empty" id="emptyState">Bugün için kayıt yok. Soldan bir besin ekleyerek başlayabilirsin.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Beslenme + antrenman ilişkisi</h2></div>
+            <div class="panel-body">
+              <div class="mini-grid">
+                <div class="mini-card"><span>Bugünkü protein</span><strong id="comboProtein">0 g</strong></div>
+                <div class="mini-card"><span>Bugünkü kalori</span><strong id="comboCalories">0 kcal</strong></div>
+                <div class="mini-card"><span>Bugünkü antrenman</span><strong id="comboWorkout">Yok</strong></div>
+              </div>
+              <p class="note" id="comboInsight"></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="mode" id="supplementMode">
+      <div class="layout">
+        <aside class="panel">
+          <div class="panel-header"><h2 class="panel-title">Supplement ekle</h2></div>
+          <div class="panel-body">
+            <form id="supplementForm">
+              <div class="form-grid">
+                <label class="full">Tarih<input id="supplementDate" type="date" required></label>
+                <label class="full">Hazır supplement / vitamin<select id="supplementPreset"><option value="">Manuel giriş</option></select></label>
+                <label class="full">Ad<input id="supplementName" type="text" placeholder="Örn. Kreatin" required></label>
+                <label class="full">Kategori<select id="supplementCategory" required></select></label>
+                <label>Doz<input id="supplementDose" type="number" min="0" step="0.1" placeholder="5" required></label>
+                <label>Birim<select id="supplementUnit" required></select></label>
+                <label class="full">Zaman<select id="supplementTiming"></select></label>
+                <label class="full">Not<textarea id="supplementNote" placeholder="İsteğe bağlı"></textarea></label>
+              </div>
+              <div class="button-row">
+                <button class="btn primary" type="submit" id="supplementSubmit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ekle</button>
+                <button class="btn" type="button" id="clearSupplementForm"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14h10l1-14"/></svg>Temizle</button>
+              </div>
+            </form>
+            <p class="note">Doz bilgileri kişisel kullanım takibi içindir. Uygulama doz önerisi vermez ve tıbbi tavsiye yerine geçmez.</p>
+          </div>
+        </aside>
+
+        <section class="stack">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Günlük supplement özeti</h2>
+              <button class="btn danger" type="button" id="resetSupplementDay"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14h10l1-14"/></svg>Günü sil</button>
+            </div>
+            <div class="panel-body">
+              <div class="summary-grid">
+                <div class="metric"><span>Kayıt</span><strong id="supplementCount">0</strong><small>adet</small></div>
+                <div class="metric"><span>Gram toplamı</span><strong id="supplementGrams">0</strong><small>g</small></div>
+                <div class="metric"><span>Protein tozu</span><strong id="supplementProtein">0</strong><small>g</small></div>
+                <div class="metric"><span>Kreatin</span><strong id="supplementCreatine">0</strong><small>g</small></div>
+              </div>
+              <div class="insight blue" id="supplementInsight"></div>
+              <div class="table-wrap" id="supplementTableWrap">
+                <table>
+                  <thead><tr><th>Ad</th><th>Kategori</th><th>Doz</th><th>Zaman</th><th>Not</th><th></th></tr></thead>
+                  <tbody id="supplementRows"></tbody>
+                </table>
+              </div>
+              <div class="empty" id="supplementEmpty">Seçili gün için supplement kaydı yok.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Son 7 gün</h2></div>
+            <div class="panel-body">
+              <div class="mini-grid" id="supplementHistory"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="mode" id="workoutMode">
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-header"><h2 class="panel-title">Antrenman dashboard</h2></div>
+          <div class="panel-body">
+            <div class="summary-grid wide" id="workoutDashboard"></div>
+            <div class="insight blue" id="workoutInsight"></div>
+          </div>
+        </section>
+
+        <div class="layout">
+          <aside class="panel">
+            <div class="panel-header"><h2 class="panel-title">Hareket ekle</h2></div>
+            <div class="panel-body">
+              <form id="workoutForm">
+                <div class="form-grid">
+                  <label class="full">Tarih<input id="workoutDate" type="date" required></label>
+                  <label class="full">Hazır hareket<select id="exercisePreset"><option value="">Manuel giriş</option></select></label>
+                  <label class="full">Hareket adı<input id="exerciseName" type="text" placeholder="Örn. Bench Press" required></label>
+                  <label class="full">Kas grubu<select id="muscleGroup" required></select></label>
+                  <label>Set<input id="sets" type="number" min="1" step="1" placeholder="4" required></label>
+                  <label>Tekrar<input id="reps" type="number" min="1" step="1" placeholder="10" required></label>
+                  <label>Ağırlık kg<input id="weight" type="number" min="0" step="0.5" placeholder="80"></label>
+                  <label>Süre dk<input id="duration" type="number" min="0" step="1" placeholder="60"></label>
+                  <label class="full">Not<textarea id="workoutNote" placeholder="İsteğe bağlı"></textarea></label>
+                </div>
+                <div class="button-row">
+                  <button class="btn primary" type="submit" id="workoutSubmit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Hareket ekle</button>
+                  <button class="btn" type="button" id="clearWorkoutForm"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14h10l1-14"/></svg>Temizle</button>
+                </div>
+              </form>
+            </div>
+          </aside>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Seçili gün özeti</h2>
+              <button class="btn danger" type="button" id="resetWorkoutDay"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M10 11v6M14 11v6M6 6l1 14h10l1-14"/></svg>Günü sil</button>
+            </div>
+            <div class="panel-body">
+              <div class="summary-grid">
+                <div class="metric"><span>Hareket</span><strong id="dayExercises">0</strong><small>adet</small></div>
+                <div class="metric"><span>Toplam set</span><strong id="daySets">0</strong><small>set</small></div>
+                <div class="metric"><span>Toplam tekrar</span><strong id="dayReps">0</strong><small>tekrar</small></div>
+                <div class="metric"><span>Volume</span><strong id="dayVolume">0</strong><small>kg</small></div>
+              </div>
+              <div class="table-wrap" id="workoutTableWrap">
+                <table>
+                  <thead><tr><th>Hareket</th><th>Kas</th><th>Set</th><th>Tekrar</th><th>Kg</th><th>Volume</th><th>Not</th><th></th></tr></thead>
+                  <tbody id="workoutRows"></tbody>
+                </table>
+              </div>
+              <div class="empty" id="workoutEmpty">Seçili gün için hareket yok.</div>
+            </div>
+          </section>
+        </div>
+
+        <section class="section-grid">
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Geçmiş</h2></div>
+            <div class="panel-body">
+              <div class="calendar" id="calendar"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Kas grubu analizi</h2></div>
+            <div class="panel-body">
+              <div class="bars" id="muscleBars"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-grid">
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">İlerleme analizi</h2></div>
+            <div class="panel-body">
+              <div class="summary-grid">
+                <div class="metric"><span>Haftalık antrenman</span><strong id="weeklyCount">0</strong><small>gün</small></div>
+                <div class="metric"><span>Aylık antrenman</span><strong id="monthlyCount">0</strong><small>gün</small></div>
+                <div class="metric"><span>Toplam set</span><strong id="allSets">0</strong><small>set</small></div>
+                <div class="metric"><span>Ortalama süre</span><strong id="avgDuration">0</strong><small>dk</small></div>
+              </div>
+              <div class="chart-card"><svg class="chart" id="volumeChart" role="img" aria-label="Son günlerde volume grafiği"></svg></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Haftalık dağılım</h2></div>
+            <div class="panel-body">
+              <div class="weekly-days" id="weeklySplit"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-grid">
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">PR takibi</h2></div>
+            <div class="panel-body"><div class="pr-list" id="prList"></div></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><h2 class="panel-title">Trend analizi</h2></div>
+            <div class="panel-body">
+              <select class="inline-select" id="trendExercise"></select>
+              <div class="chart-card"><svg class="chart" id="trendChart" role="img" aria-label="Hareket gelişim grafiği"></svg></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORE = {
+      nutrition: "daily-nutrition-v1",
+      customFoods: "custom-foods-v1",
+      hiddenFoods: "hidden-foods-v1",
+      supplements: "daily-supplement-v1",
+      workouts: "workout-tracker-v1",
+      profile: "body-twin-profile-v1",
+      dailySignals: "body-twin-daily-signals-v1",
+      theme: "health-app-theme-v1"
+    };
+
+    const presets = [
+      { name: "Haşlanmış yumurta", calories: 78, protein: 6.3, carbs: 0.6, fat: 5.3 },
+      { name: "Sahanda yumurta", calories: 120, protein: 7, carbs: 0.8, fat: 9.5 },
+      { name: "Beyaz peynir 30 g", calories: 80, protein: 5, carbs: 1, fat: 6 },
+      { name: "Kaşar peyniri 30 g", calories: 105, protein: 7, carbs: 0.5, fat: 8.4 },
+      { name: "Lor peyniri 100 g", calories: 90, protein: 17, carbs: 3, fat: 1.5 },
+      { name: "Yoğurt 200 g", calories: 122, protein: 7, carbs: 9.4, fat: 6.6 },
+      { name: "Süzme yoğurt 150 g", calories: 135, protein: 12, carbs: 6, fat: 7 },
+      { name: "Kefir 200 ml", calories: 110, protein: 6.8, carbs: 9, fat: 5 },
+      { name: "Süt 200 ml", calories: 122, protein: 6.4, carbs: 9.6, fat: 6.6 },
+      { name: "Ayran 250 ml", calories: 80, protein: 4, carbs: 6, fat: 4 },
+      { name: "Tavuk göğsü 100 g", calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      { name: "Tavuk but 100 g", calories: 209, protein: 26, carbs: 0, fat: 10.9 },
+      { name: "Hindi göğsü 100 g", calories: 135, protein: 29, carbs: 0, fat: 1.5 },
+      { name: "Dana biftek 100 g", calories: 217, protein: 26, carbs: 0, fat: 12 },
+      { name: "Yağsız kıyma 100 g", calories: 176, protein: 26, carbs: 0, fat: 8 },
+      { name: "Somon 100 g", calories: 208, protein: 20, carbs: 0, fat: 13 },
+      { name: "Ton balığı 100 g", calories: 132, protein: 29, carbs: 0, fat: 1 },
+      { name: "Levrek 100 g", calories: 124, protein: 24, carbs: 0, fat: 2.6 },
+      { name: "Karides 100 g", calories: 99, protein: 24, carbs: 0.2, fat: 0.3 },
+      { name: "Sucuk 50 g", calories: 220, protein: 10, carbs: 1.5, fat: 19 },
+      { name: "Mercimek çorbası", calories: 170, protein: 9, carbs: 26, fat: 4 },
+      { name: "Ezogelin çorbası", calories: 150, protein: 6, carbs: 24, fat: 4 },
+      { name: "Nohut yemeği 150 g", calories: 245, protein: 12, carbs: 36, fat: 6 },
+      { name: "Kuru fasulye 150 g", calories: 230, protein: 13, carbs: 34, fat: 5 },
+      { name: "Yeşil mercimek 150 g", calories: 174, protein: 13.5, carbs: 30, fat: 0.6 },
+      { name: "Kırmızı mercimek 150 g", calories: 176, protein: 13.5, carbs: 30, fat: 0.7 },
+      { name: "Barbunya 150 g", calories: 210, protein: 10, carbs: 32, fat: 5 },
+      { name: "Humus 100 g", calories: 166, protein: 8, carbs: 14, fat: 10 },
+      { name: "Pirinç pilavı 150 g", calories: 195, protein: 4, carbs: 42, fat: 0.4 },
+      { name: "Bulgur pilavı 150 g", calories: 180, protein: 5.5, carbs: 36, fat: 2 },
+      { name: "Makarna haşlanmış 150 g", calories: 236, protein: 8.7, carbs: 46, fat: 1.4 },
+      { name: "Tam buğday makarna 150 g", calories: 210, protein: 9, carbs: 42, fat: 1.5 },
+      { name: "Yulaf ezmesi 50 g", calories: 190, protein: 6.5, carbs: 33, fat: 3.5 },
+      { name: "Granola 50 g", calories: 230, protein: 5, carbs: 32, fat: 9 },
+      { name: "Tam buğday ekmek 1 dilim", calories: 80, protein: 4, carbs: 14, fat: 1.1 },
+      { name: "Beyaz ekmek 1 dilim", calories: 75, protein: 2.5, carbs: 14, fat: 1 },
+      { name: "Çavdar ekmeği 1 dilim", calories: 83, protein: 3, carbs: 15.5, fat: 1 },
+      { name: "Lavaş 1 adet", calories: 170, protein: 5, carbs: 32, fat: 3 },
+      { name: "Patates haşlanmış 150 g", calories: 130, protein: 3, carbs: 30, fat: 0.2 },
+      { name: "Tatlı patates 150 g", calories: 129, protein: 2.4, carbs: 30, fat: 0.2 },
+      { name: "Mısır 100 g", calories: 96, protein: 3.4, carbs: 21, fat: 1.5 },
+      { name: "Kinoa pişmiş 150 g", calories: 180, protein: 6.6, carbs: 32, fat: 2.9 },
+      { name: "Karabuğday pişmiş 150 g", calories: 138, protein: 5, carbs: 30, fat: 0.9 },
+      { name: "Elma 1 orta", calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
+      { name: "Muz 1 orta", calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
+      { name: "Portakal 1 orta", calories: 62, protein: 1.2, carbs: 15.4, fat: 0.2 },
+      { name: "Mandalina 1 adet", calories: 47, protein: 0.7, carbs: 12, fat: 0.2 },
+      { name: "Armut 1 orta", calories: 101, protein: 0.6, carbs: 27, fat: 0.3 },
+      { name: "Üzüm 100 g", calories: 69, protein: 0.7, carbs: 18, fat: 0.2 },
+      { name: "Çilek 100 g", calories: 32, protein: 0.7, carbs: 7.7, fat: 0.3 },
+      { name: "Yaban mersini 100 g", calories: 57, protein: 0.7, carbs: 14.5, fat: 0.3 },
+      { name: "Şeftali 1 orta", calories: 59, protein: 1.4, carbs: 14, fat: 0.4 },
+      { name: "Kayısı 100 g", calories: 48, protein: 1.4, carbs: 11, fat: 0.4 },
+      { name: "Karpuz 200 g", calories: 60, protein: 1.2, carbs: 15, fat: 0.3 },
+      { name: "Kavun 200 g", calories: 68, protein: 1.6, carbs: 16, fat: 0.4 },
+      { name: "Avokado yarım", calories: 160, protein: 2, carbs: 8.5, fat: 14.7 },
+      { name: "Domates 100 g", calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2 },
+      { name: "Salatalık 100 g", calories: 15, protein: 0.7, carbs: 3.6, fat: 0.1 },
+      { name: "Havuç 100 g", calories: 41, protein: 0.9, carbs: 10, fat: 0.2 },
+      { name: "Brokoli 100 g", calories: 35, protein: 2.4, carbs: 7.2, fat: 0.4 },
+      { name: "Karnabahar 100 g", calories: 25, protein: 1.9, carbs: 5, fat: 0.3 },
+      { name: "Ispanak 100 g", calories: 23, protein: 2.9, carbs: 3.6, fat: 0.4 },
+      { name: "Marul 100 g", calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2 },
+      { name: "Roka 50 g", calories: 13, protein: 1.3, carbs: 1.9, fat: 0.3 },
+      { name: "Biber 100 g", calories: 31, protein: 1, carbs: 6, fat: 0.3 },
+      { name: "Soğan 100 g", calories: 40, protein: 1.1, carbs: 9.3, fat: 0.1 },
+      { name: "Mantar 100 g", calories: 22, protein: 3.1, carbs: 3.3, fat: 0.3 },
+      { name: "Kabak 100 g", calories: 17, protein: 1.2, carbs: 3.1, fat: 0.3 },
+      { name: "Patlıcan 100 g", calories: 25, protein: 1, carbs: 6, fat: 0.2 },
+      { name: "Yeşil salata", calories: 45, protein: 2, carbs: 8, fat: 1 },
+      { name: "Zeytinyağlı salata", calories: 140, protein: 2, carbs: 8, fat: 11 },
+      { name: "Zeytinyağı 1 yemek kaşığı", calories: 119, protein: 0, carbs: 0, fat: 13.5 },
+      { name: "Tereyağı 10 g", calories: 72, protein: 0.1, carbs: 0, fat: 8.1 },
+      { name: "Fındık 30 g", calories: 188, protein: 4.5, carbs: 5, fat: 18 },
+      { name: "Badem 30 g", calories: 174, protein: 6.4, carbs: 6.5, fat: 15 },
+      { name: "Ceviz 30 g", calories: 196, protein: 4.6, carbs: 4.1, fat: 19.6 },
+      { name: "Fıstık ezmesi 1 yemek kaşığı", calories: 94, protein: 3.5, carbs: 3.2, fat: 8 },
+      { name: "Chia tohumu 15 g", calories: 73, protein: 2.5, carbs: 6.3, fat: 4.6 },
+      { name: "Keten tohumu 15 g", calories: 80, protein: 2.7, carbs: 4.3, fat: 6.3 },
+      { name: "Tahin 1 yemek kaşığı", calories: 89, protein: 2.6, carbs: 3.2, fat: 8 },
+      { name: "Bal 1 yemek kaşığı", calories: 64, protein: 0, carbs: 17, fat: 0 },
+      { name: "Pekmez 1 yemek kaşığı", calories: 58, protein: 0.3, carbs: 14, fat: 0 },
+      { name: "Bitter çikolata 20 g", calories: 120, protein: 1.6, carbs: 9, fat: 8.5 },
+      { name: "Sütlü çikolata 20 g", calories: 107, protein: 1.5, carbs: 12, fat: 6 },
+      { name: "Protein bar 1 adet", calories: 210, protein: 20, carbs: 22, fat: 7 },
+      { name: "Whey protein 1 ölçek", calories: 120, protein: 24, carbs: 3, fat: 2 },
+      { name: "Pirinç patlağı 2 adet", calories: 70, protein: 1.4, carbs: 14, fat: 0.6 },
+      { name: "Simit yarım", calories: 180, protein: 5, carbs: 34, fat: 3 },
+      { name: "Poğaça 1 adet", calories: 260, protein: 6, carbs: 30, fat: 13 },
+      { name: "Börek peynirli 1 dilim", calories: 330, protein: 10, carbs: 34, fat: 17 },
+      { name: "Pizza 1 dilim", calories: 285, protein: 12, carbs: 36, fat: 10 },
+      { name: "Hamburger 1 adet", calories: 520, protein: 25, carbs: 45, fat: 27 },
+      { name: "Izgara köfte 100 g", calories: 240, protein: 18, carbs: 3, fat: 17 },
+      { name: "Tavuk döner 100 g", calories: 190, protein: 23, carbs: 2, fat: 10 },
+      { name: "Et döner 100 g", calories: 250, protein: 22, carbs: 1, fat: 18 },
+      { name: "Lahmacun 1 adet", calories: 320, protein: 14, carbs: 42, fat: 11 },
+      { name: "Menemen 1 porsiyon", calories: 250, protein: 13, carbs: 12, fat: 17 },
+      { name: "Omlet 2 yumurta", calories: 190, protein: 13, carbs: 2, fat: 14 },
+      { name: "Smoothie meyveli 300 ml", calories: 220, protein: 8, carbs: 42, fat: 3 },
+      { name: "Türk kahvesi şekersiz", calories: 5, protein: 0.3, carbs: 0.5, fat: 0 }
+    ];
+
+    const exercisePresets = [
+      { name: "Bench Press", muscle: "Göğüs" },
+      { name: "Incline Dumbbell Press", muscle: "Göğüs" },
+      { name: "Dumbbell Fly", muscle: "Göğüs" },
+      { name: "Cable Fly", muscle: "Göğüs" },
+      { name: "Push Up", muscle: "Göğüs" },
+      { name: "Chest Press Machine", muscle: "Göğüs" },
+      { name: "Pull Up", muscle: "Sırt" },
+      { name: "Lat Pulldown", muscle: "Sırt" },
+      { name: "Barbell Row", muscle: "Sırt" },
+      { name: "Seated Cable Row", muscle: "Sırt" },
+      { name: "One Arm Dumbbell Row", muscle: "Sırt" },
+      { name: "Deadlift", muscle: "Sırt" },
+      { name: "Face Pull", muscle: "Omuz" },
+      { name: "Shoulder Press", muscle: "Omuz" },
+      { name: "Dumbbell Lateral Raise", muscle: "Omuz" },
+      { name: "Front Raise", muscle: "Omuz" },
+      { name: "Rear Delt Fly", muscle: "Omuz" },
+      { name: "Upright Row", muscle: "Omuz" },
+      { name: "Barbell Curl", muscle: "Ön Kol (Biceps)" },
+      { name: "Dumbbell Curl", muscle: "Ön Kol (Biceps)" },
+      { name: "Hammer Curl", muscle: "Ön Kol (Biceps)" },
+      { name: "Preacher Curl", muscle: "Ön Kol (Biceps)" },
+      { name: "Cable Curl", muscle: "Ön Kol (Biceps)" },
+      { name: "Triceps Pushdown", muscle: "Arka Kol (Triceps)" },
+      { name: "Skull Crusher", muscle: "Arka Kol (Triceps)" },
+      { name: "Close Grip Bench Press", muscle: "Arka Kol (Triceps)" },
+      { name: "Overhead Triceps Extension", muscle: "Arka Kol (Triceps)" },
+      { name: "Dips", muscle: "Arka Kol (Triceps)" },
+      { name: "Squat", muscle: "Bacak" },
+      { name: "Leg Press", muscle: "Bacak" },
+      { name: "Walking Lunge", muscle: "Bacak" },
+      { name: "Romanian Deadlift", muscle: "Bacak" },
+      { name: "Leg Extension", muscle: "Bacak" },
+      { name: "Leg Curl", muscle: "Bacak" },
+      { name: "Calf Raise", muscle: "Bacak" },
+      { name: "Hip Thrust", muscle: "Bacak" },
+      { name: "Plank", muscle: "Karın" },
+      { name: "Crunch", muscle: "Karın" },
+      { name: "Hanging Leg Raise", muscle: "Karın" },
+      { name: "Cable Crunch", muscle: "Karın" },
+      { name: "Russian Twist", muscle: "Karın" },
+      { name: "Mountain Climber", muscle: "Karın" },
+      { name: "Treadmill Run", muscle: "Kardiyo" },
+      { name: "Stationary Bike", muscle: "Kardiyo" },
+      { name: "Rowing Machine", muscle: "Kardiyo" },
+      { name: "Elliptical", muscle: "Kardiyo" },
+      { name: "Jump Rope", muscle: "Kardiyo" },
+      { name: "Burpee", muscle: "Kardiyo" },
+      { name: "Kettlebell Swing", muscle: "Diğer" },
+      { name: "Farmer's Walk", muscle: "Diğer" }
+    ];
+
+    const supplementPresets = [
+      { name: "Whey Protein", category: "Protein", unit: "g" },
+      { name: "Kazein Protein", category: "Protein", unit: "g" },
+      { name: "Bitkisel Protein", category: "Protein", unit: "g" },
+      { name: "Kreatin Monohidrat", category: "Performans", unit: "g" },
+      { name: "BCAA", category: "Amino Asit", unit: "g" },
+      { name: "EAA", category: "Amino Asit", unit: "g" },
+      { name: "Glutamin", category: "Amino Asit", unit: "g" },
+      { name: "Beta Alanin", category: "Performans", unit: "g" },
+      { name: "L-Karnitin", category: "Performans", unit: "mg" },
+      { name: "Pre-workout", category: "Performans", unit: "g" },
+      { name: "Kafein", category: "Performans", unit: "mg" },
+      { name: "Kolajen", category: "Destek", unit: "g" },
+      { name: "Omega-3", category: "Destek", unit: "mg" },
+      { name: "Multivitamin", category: "Vitamin", unit: "tablet" },
+      { name: "Vitamin D3", category: "Vitamin", unit: "IU" },
+      { name: "Vitamin C", category: "Vitamin", unit: "mg" },
+      { name: "Vitamin B12", category: "Vitamin", unit: "mcg" },
+      { name: "Magnezyum", category: "Mineral", unit: "mg" },
+      { name: "Çinko", category: "Mineral", unit: "mg" },
+      { name: "Demir", category: "Mineral", unit: "mg" },
+      { name: "Elektrolit", category: "Mineral", unit: "tablet" }
+    ];
+
+    const muscleGroups = ["Göğüs", "Sırt", "Omuz", "Ön Kol (Biceps)", "Arka Kol (Triceps)", "Bacak", "Karın", "Kardiyo", "Diğer"];
+    const supplementCategories = ["Protein", "Performans", "Amino Asit", "Vitamin", "Mineral", "Destek", "Diğer"];
+    const supplementUnits = ["g", "mg", "mcg", "IU", "ml", "tablet", "kapsül", "ölçek", "adet"];
+    const supplementTimings = ["Belirtilmedi", "Sabah", "Öğle", "Akşam", "Antrenman öncesi", "Antrenman sonrası", "Yatmadan önce"];
+    const sortedPresets = [...presets].sort((a, b) => a.name.localeCompare(b.name, "tr"));
+    const aiFoodLibrary = [
+      { name: "Tavuk şiş", terms: ["tavuk şiş", "tavuk sis"], calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      { name: "Izgara tavuk", terms: ["ızgara tavuk", "izgara tavuk"], calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      { name: "Tavuk göğsü", terms: ["tavuk göğsü", "tavuk gogsu"], calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      { terms: ["köfte", "kofte"], calories: 240, protein: 18, carbs: 3, fat: 17 },
+      { terms: ["kebap"], calories: 250, protein: 20, carbs: 4, fat: 18 },
+      { terms: ["pizza"], calories: 266, protein: 11, carbs: 33, fat: 10 },
+      { terms: ["hamburger"], calories: 250, protein: 12, carbs: 20, fat: 13 },
+      { terms: ["lahmacun"], calories: 270, protein: 12, carbs: 35, fat: 9 },
+      { terms: ["börek", "borek"], calories: 330, protein: 10, carbs: 34, fat: 17 },
+      { terms: ["poğaça", "pogaca"], calories: 310, protein: 7, carbs: 36, fat: 15 },
+      { name: "Simit", terms: ["simit"], calories: 350, protein: 10, carbs: 70, fat: 4 },
+      { name: "Makarna", terms: ["makarna"], calories: 157, protein: 5.8, carbs: 30.9, fat: 0.9 },
+      { name: "Pirinç pilavı", terms: ["pilav", "pirinç", "pirinc"], calories: 130, protein: 2.7, carbs: 28.2, fat: 0.3 },
+      { name: "Bulgur pilavı", terms: ["pilav", "bulgur"], calories: 83, protein: 3.1, carbs: 18.6, fat: 0.2 },
+      { terms: ["patates"], calories: 87, protein: 1.9, carbs: 20.1, fat: 0.1 },
+      { terms: ["ton balığı", "ton baligi"], calories: 132, protein: 29, carbs: 0, fat: 1 },
+      { terms: ["sucuk"], calories: 440, protein: 20, carbs: 3, fat: 38 },
+      { terms: ["yoğurt", "yogurt"], calories: 61, protein: 3.5, carbs: 4.7, fat: 3.3 },
+      { terms: ["kefir"], calories: 55, protein: 3.4, carbs: 4.5, fat: 2.5 },
+      { terms: ["süt", "sut"], calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3 },
+      { terms: ["peynir"], calories: 267, protein: 17, carbs: 3.3, fat: 21 },
+      { terms: ["ekmek"], calories: 250, protein: 8.5, carbs: 48, fat: 3.2 },
+      { terms: ["yumurta"], calories: 155, protein: 12.6, carbs: 1.1, fat: 10.6 },
+      { terms: ["mercimek"], calories: 116, protein: 9, carbs: 20, fat: 0.4 },
+      { terms: ["nohut"], calories: 164, protein: 8.9, carbs: 27.4, fat: 2.6 },
+      { terms: ["fasulye"], calories: 127, protein: 8.7, carbs: 22.8, fat: 0.5 },
+      { terms: ["salata"], calories: 45, protein: 2, carbs: 8, fat: 1 },
+      { terms: ["avokado"], calories: 160, protein: 2, carbs: 8.5, fat: 14.7 },
+      { terms: ["muz"], calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3 },
+      { terms: ["elma"], calories: 52, protein: 0.3, carbs: 13.8, fat: 0.2 },
+      { terms: ["zeytinyağı", "zeytinyagi"], calories: 884, protein: 0, carbs: 0, fat: 100 }
+    ];
+    const sortedExercisePresets = [...exercisePresets].sort((a, b) => {
+      const muscleOrder = muscleGroups.indexOf(a.muscle) - muscleGroups.indexOf(b.muscle);
+      return muscleOrder || a.name.localeCompare(b.name, "tr");
+    });
+    const sortedSupplementPresets = [...supplementPresets].sort((a, b) => {
+      const categoryOrder = supplementCategories.indexOf(a.category) - supplementCategories.indexOf(b.category);
+      return categoryOrder || a.name.localeCompare(b.name, "tr");
+    });
+    const dayNames = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+    const today = toDateKey(new Date());
+    let foods = load(STORE.nutrition, []);
+    let customFoods = load(STORE.customFoods, []);
+    let hiddenFoodNames = load(STORE.hiddenFoods, []);
+    let supplements = load(STORE.supplements, []);
+    let workouts = load(STORE.workouts, []);
+    let profile = load(STORE.profile, {});
+    let dailySignals = load(STORE.dailySignals, []);
+    let selectedFoodDate = today;
+    let selectedWorkoutDate = today;
+    let selectedSupplementDate = today;
+    let editingFoodId = "";
+    let activeFoodReference = null;
+    let editingSupplementId = "";
+    let editingWorkoutId = "";
+
+    const $ = (selector) => document.querySelector(selector);
+
+    init();
+
+    function init() {
+      $("#todayLabel").textContent = new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
+      document.documentElement.dataset.theme = localStorage.getItem(STORE.theme) || "light";
+      $("#foodDate").value = today;
+      $("#workoutDate").value = today;
+      $("#supplementDate").value = today;
+      setupTabs();
+      setupTheme();
+      setupNutrition();
+      setupSupplement();
+      setupWorkout();
+      setupBodyTwin();
+      renderAll();
+    }
+
+    function setupTabs() {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => activateMode(tab.dataset.tab, tab));
+      });
+      $("#profileToggle").addEventListener("click", () => activateMode("profile"));
+      $("#closeProfile").addEventListener("click", () => activateMode("dashboard", document.querySelector('[data-tab="dashboard"]')));
+    }
+
+    function activateMode(name, activeTab) {
+      document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+      document.querySelectorAll(".mode").forEach((mode) => mode.classList.remove("active"));
+      if (activeTab) activeTab.classList.add("active");
+      $(`#${name}Mode`).classList.add("active");
+    }
+
+    function setupTheme() {
+      $("#themeToggle").addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem(STORE.theme, next);
+      });
+    }
+
+    function setupNutrition() {
+      renderFoodPresets();
+      sortedPresets.slice(0, 12).forEach((food) => {
+        const button = document.createElement("button");
+        button.className = "preset";
+        button.type = "button";
+        button.textContent = food.name;
+        button.title = food.name;
+        button.addEventListener("click", () => {
+          selectFoodReference(makeFoodReference(food));
+          $("#presetSelect").value = "";
+          $("#saveCustomFood").checked = false;
+        });
+        $("#presetList").appendChild(button);
+      });
+
+      $("#presetSelect").addEventListener("change", (event) => {
+        const [source, id] = event.target.value.split(":");
+        const food = source === "custom"
+          ? customFoods.find((item) => item.id === id)
+          : sortedPresets[Number(id)];
+        if (food) {
+          selectFoodReference(makeFoodReference(food));
+          $("#saveCustomFood").checked = false;
+        }
+      });
+
+      $("#name").addEventListener("input", () => {
+        activeFoodReference = null;
+        if ($("#presetSelect").value === "") $("#saveCustomFood").checked = true;
+        renderFoodMatches();
+      });
+
+      $("#suggestNutrition").addEventListener("click", () => {
+        renderFoodMatches(true);
+      });
+
+      $("#foodAmount").addEventListener("input", applySelectedAmount);
+      $("#foodUnit").addEventListener("change", applySelectedAmount);
+
+      $("#toggleFoodManager").addEventListener("click", () => {
+        const manager = $("#foodManager");
+        manager.hidden = !manager.hidden;
+        if (!manager.hidden) {
+          renderFoodManager();
+          $("#foodManagerSearch").focus();
+        }
+      });
+
+      $("#foodManagerSearch").addEventListener("input", renderFoodManager);
+      $("#restoreHiddenFoods").addEventListener("click", () => {
+        if (!hiddenFoodNames.length) return;
+        hiddenFoodNames = [];
+        save(STORE.hiddenFoods, hiddenFoodNames);
+        renderFoodPresets();
+        renderFoodManager();
+      });
+
+      $("#foodDate").addEventListener("change", (event) => {
+        selectedFoodDate = event.target.value || today;
+        resetFoodForm();
+        renderAll();
+      });
+
+      $("#foodForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const food = {
+          id: editingFoodId || makeId(),
+          date: $("#foodDate").value || selectedFoodDate,
+          name: $("#name").value.trim(),
+          calories: readNumber($("#calories").value),
+          protein: readNumber($("#protein").value),
+          carbs: readNumber($("#carbs").value),
+          fat: readNumber($("#fat").value),
+          servingAmount: readNumber($("#foodAmount").value) || 1,
+          servingUnit: readNumber($("#foodAmount").value) ? $("#foodUnit").value : "porsiyon"
+        };
+        if (!food.name) return;
+        selectedFoodDate = food.date;
+        if (editingFoodId) {
+          foods = foods.map((item) => item.id === editingFoodId ? food : item);
+        } else {
+          foods.unshift(food);
+        }
+        if ($("#saveCustomFood").checked) saveCustomFood(food);
+        save(STORE.nutrition, foods);
+        resetFoodForm();
+        renderAll();
+        $("#name").focus();
+      });
+
+      $("#clearForm").addEventListener("click", () => {
+        resetFoodForm();
+        $("#name").focus();
+      });
+
+      $("#resetDay").addEventListener("click", () => {
+        if (!foods.length || !confirm("Seçili günün tüm besin kayıtları silinsin mi?")) return;
+        foods = foods.filter((food) => (food.date || today) !== selectedFoodDate);
+        save(STORE.nutrition, foods);
+        resetFoodForm();
+        renderAll();
+      });
+
+      $("#foodRows").addEventListener("click", (event) => {
+        const editButton = event.target.closest("[data-edit-food]");
+        const removeButton = event.target.closest("[data-remove-food]");
+        if (editButton) {
+          const food = foods.find((item) => item.id === editButton.dataset.editFood);
+          if (food) editFood(food);
+          return;
+        }
+        if (removeButton) {
+          foods = foods.filter((food) => food.id !== removeButton.dataset.removeFood);
+          if (editingFoodId === removeButton.dataset.removeFood) resetFoodForm();
+          save(STORE.nutrition, foods);
+          renderAll();
+        }
+      });
+    }
+
+    function setupSupplement() {
+      supplementCategories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        $("#supplementCategory").appendChild(option);
+      });
+
+      supplementUnits.forEach((unit) => {
+        const option = document.createElement("option");
+        option.value = unit;
+        option.textContent = unit;
+        $("#supplementUnit").appendChild(option);
+      });
+
+      supplementTimings.forEach((timing) => {
+        const option = document.createElement("option");
+        option.value = timing;
+        option.textContent = timing;
+        $("#supplementTiming").appendChild(option);
+      });
+
+      supplementCategories.forEach((category) => {
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = category;
+        sortedSupplementPresets
+          .filter((item) => item.category === category)
+          .forEach((item) => {
+            const option = document.createElement("option");
+            option.value = String(sortedSupplementPresets.indexOf(item));
+            option.textContent = item.name;
+            optgroup.appendChild(option);
+          });
+        if (optgroup.children.length) $("#supplementPreset").appendChild(optgroup);
+      });
+
+      $("#supplementPreset").addEventListener("change", (event) => {
+        if (event.target.value !== "") fillSupplement(sortedSupplementPresets[Number(event.target.value)]);
+      });
+
+      $("#supplementDate").addEventListener("change", (event) => {
+        selectedSupplementDate = event.target.value || today;
+        renderAll();
+      });
+
+      $("#supplementForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        selectedSupplementDate = $("#supplementDate").value || today;
+        const entry = {
+          id: editingSupplementId || makeId(),
+          date: selectedSupplementDate,
+          name: $("#supplementName").value.trim(),
+          category: $("#supplementCategory").value,
+          dose: readNumber($("#supplementDose").value),
+          unit: $("#supplementUnit").value,
+          timing: $("#supplementTiming").value,
+          note: $("#supplementNote").value.trim()
+        };
+        if (!entry.name || !entry.dose) return;
+        if (editingSupplementId) {
+          supplements = supplements.map((item) => item.id === editingSupplementId ? entry : item);
+        } else {
+          supplements.unshift(entry);
+        }
+        save(STORE.supplements, supplements);
+        resetSupplementForm();
+        renderAll();
+        $("#supplementName").focus();
+      });
+
+      $("#clearSupplementForm").addEventListener("click", () => {
+        resetSupplementForm();
+      });
+
+      $("#resetSupplementDay").addEventListener("click", () => {
+        const dayItems = supplements.filter((item) => item.date === selectedSupplementDate);
+        if (!dayItems.length || !confirm("Seçili günün tüm supplement kayıtları silinsin mi?")) return;
+        supplements = supplements.filter((item) => item.date !== selectedSupplementDate);
+        save(STORE.supplements, supplements);
+        resetSupplementForm();
+        renderAll();
+      });
+
+      $("#supplementRows").addEventListener("click", (event) => {
+        const editButton = event.target.closest("[data-edit-supplement]");
+        const removeButton = event.target.closest("[data-remove-supplement]");
+        if (editButton) {
+          const item = supplements.find((entry) => entry.id === editButton.dataset.editSupplement);
+          if (item) editSupplement(item);
+          return;
+        }
+        if (removeButton) {
+          supplements = supplements.filter((item) => item.id !== removeButton.dataset.removeSupplement);
+          if (editingSupplementId === removeButton.dataset.removeSupplement) resetSupplementForm();
+          save(STORE.supplements, supplements);
+          renderAll();
+        }
+      });
+    }
+
+    function setupWorkout() {
+      muscleGroups.forEach((group) => {
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = group;
+        sortedExercisePresets
+          .filter((exercise) => exercise.muscle === group)
+          .forEach((exercise) => {
+            const option = document.createElement("option");
+            option.value = String(sortedExercisePresets.indexOf(exercise));
+            option.textContent = exercise.name;
+            optgroup.appendChild(option);
+          });
+        if (optgroup.children.length) $("#exercisePreset").appendChild(optgroup);
+      });
+
+      muscleGroups.forEach((group) => {
+        const option = document.createElement("option");
+        option.value = group;
+        option.textContent = group;
+        $("#muscleGroup").appendChild(option);
+      });
+
+      $("#exercisePreset").addEventListener("change", (event) => {
+        if (event.target.value !== "") fillExercise(sortedExercisePresets[Number(event.target.value)]);
+      });
+
+      $("#workoutDate").addEventListener("change", (event) => {
+        selectedWorkoutDate = event.target.value || today;
+        renderAll();
+      });
+
+      $("#workoutForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        selectedWorkoutDate = $("#workoutDate").value || today;
+        const entry = {
+          id: editingWorkoutId || makeId(),
+          date: selectedWorkoutDate,
+          exercise: $("#exerciseName").value.trim(),
+          muscle: $("#muscleGroup").value,
+          sets: readNumber($("#sets").value),
+          reps: readNumber($("#reps").value),
+          weight: readNumber($("#weight").value),
+          duration: readNumber($("#duration").value),
+          note: $("#workoutNote").value.trim()
+        };
+        if (!entry.exercise || !entry.sets || !entry.reps) return;
+        if (editingWorkoutId) {
+          workouts = workouts.map((item) => item.id === editingWorkoutId ? entry : item);
+        } else {
+          workouts.unshift(entry);
+        }
+        save(STORE.workouts, workouts);
+        resetWorkoutForm();
+        renderAll();
+        $("#exerciseName").focus();
+      });
+
+      $("#clearWorkoutForm").addEventListener("click", () => {
+        resetWorkoutForm();
+      });
+
+      $("#resetWorkoutDay").addEventListener("click", () => {
+        const dayItems = workouts.filter((item) => item.date === selectedWorkoutDate);
+        if (!dayItems.length || !confirm("Seçili günün tüm antrenman kayıtları silinsin mi?")) return;
+        workouts = workouts.filter((item) => item.date !== selectedWorkoutDate);
+        save(STORE.workouts, workouts);
+        resetWorkoutForm();
+        renderAll();
+      });
+
+      $("#workoutRows").addEventListener("click", (event) => {
+        const editButton = event.target.closest("[data-edit-workout]");
+        const removeButton = event.target.closest("[data-remove-workout]");
+        if (editButton) {
+          const item = workouts.find((entry) => entry.id === editButton.dataset.editWorkout);
+          if (item) editWorkout(item);
+          return;
+        }
+        if (removeButton) {
+          workouts = workouts.filter((item) => item.id !== removeButton.dataset.removeWorkout);
+          if (editingWorkoutId === removeButton.dataset.removeWorkout) resetWorkoutForm();
+          save(STORE.workouts, workouts);
+          renderAll();
+        }
+      });
+
+      $("#trendExercise").addEventListener("change", renderTrendChart);
+    }
+
+    function setupBodyTwin() {
+      $("#bodySignalDate").value = today;
+      [
+        ["profileHeight", "height"], ["profileWeight", "weight"], ["profileAge", "age"],
+        ["profileSex", "sex"], ["profileBodyFat", "bodyFat"], ["profileMuscleMass", "muscleMass"],
+        ["profileGoal", "goal"], ["profileActivity", "activity"]
+      ].forEach(([id, key]) => { $("#" + id).value = profile[key] ?? ""; });
+
+      $("#profileForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        profile = {
+          height: optionalNumber($("#profileHeight").value),
+          weight: optionalNumber($("#profileWeight").value),
+          age: optionalNumber($("#profileAge").value),
+          sex: $("#profileSex").value,
+          bodyFat: optionalNumber($("#profileBodyFat").value),
+          muscleMass: optionalNumber($("#profileMuscleMass").value),
+          goal: $("#profileGoal").value,
+          activity: $("#profileActivity").value,
+          updatedAt: new Date().toISOString()
+        };
+        save(STORE.profile, profile);
+        renderAll();
+      });
+
+      $("#bodySignalDate").addEventListener("change", () => fillBodySignal($("#bodySignalDate").value || today));
+      $("#bodySignalForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const date = $("#bodySignalDate").value || today;
+        const entry = {
+          date,
+          water: optionalNumber($("#signalWater").value),
+          sleep: optionalNumber($("#signalSleep").value),
+          steps: optionalNumber($("#signalSteps").value),
+          burnedCalories: optionalNumber($("#signalBurnedCalories").value),
+          heartRate: optionalNumber($("#signalHeartRate").value),
+          hrv: optionalNumber($("#signalHrv").value),
+          updatedAt: new Date().toISOString()
+        };
+        dailySignals = [...dailySignals.filter((item) => item.date !== date), entry];
+        save(STORE.dailySignals, dailySignals);
+        renderAll();
+      });
+      fillBodySignal(today);
+    }
+
+    function fillBodySignal(date) {
+      const entry = dailySignals.find((item) => item.date === date) || {};
+      [
+        ["signalWater", "water"], ["signalSleep", "sleep"], ["signalSteps", "steps"],
+        ["signalBurnedCalories", "burnedCalories"], ["signalHeartRate", "heartRate"], ["signalHrv", "hrv"]
+      ].forEach(([id, key]) => { $("#" + id).value = entry[key] ?? ""; });
+    }
+
+    function renderAll() {
+      renderHomeDashboard();
+      renderNutrition();
+      renderSupplement();
+      renderWorkoutDashboard();
+      renderWorkoutDay();
+      renderCalendar();
+      renderMuscleAnalysis();
+      renderProgress();
+      renderWeeklySplit();
+      renderPrs();
+      renderTrendSelect();
+      renderNutritionWorkoutCombo();
+      renderDashboardCoach();
+    }
+
+    function buildDecisionEngine() {
+      const todayFoods = foods.filter((food) => (food.date || today) === today);
+      const todayWorkouts = workouts.filter((item) => item.date === today);
+      const todaySupplements = supplements.filter((item) => item.date === today);
+      const latestSignal = dailySignals.find((item) => item.date === today) || [...dailySignals].sort((a, b) => a.date.localeCompare(b.date)).at(-1) || {};
+      const weekSignals = dailySignals.filter((item) => isWithinDays(item.date, 7));
+      const averageSignal = (key, excludeToday = false) => {
+        const values = weekSignals.filter((item) => !excludeToday || item.date !== today).map((item) => item[key]).filter(Number.isFinite);
+        return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+      };
+      const totals = { calories: sum(todayFoods, "calories"), protein: sum(todayFoods, "protein") };
+      const proteinReference = profile.weight ? profile.weight * 1.2 : null;
+      const sleepScore = latestSignal.sleep === null || latestSignal.sleep === undefined ? 60 : latestSignal.sleep >= 7 && latestSignal.sleep <= 9 ? 100 : latestSignal.sleep >= 6 ? 72 : 45;
+      const nutritionScore = !todayFoods.length ? 45 : proteinReference ? Math.min(100, Math.round((totals.protein / proteinReference) * 100)) : 75;
+      const activityScore = latestSignal.steps === null || latestSignal.steps === undefined ? todayWorkouts.length ? 75 : 60 : Math.min(100, Math.round((latestSignal.steps / 7000) * 100));
+      const priorHrv = averageSignal("hrv", true);
+      const recoveryScore = latestSignal.hrv === null || latestSignal.hrv === undefined || !priorHrv ? 70 : latestSignal.hrv < priorHrv * 0.85 ? 55 : 88;
+      const supplementScore = todaySupplements.length ? 90 : supplements.some((item) => isWithinDays(item.date, 7)) ? 60 : 70;
+      const workoutScore = !todayWorkouts.length ? 70 : latestSignal.sleep && latestSignal.sleep < 6.5 ? 60 : 88;
+      const profileScore = profile.goal && profile.weight && profile.activity ? 95 : 55;
+      const score = Math.round((sleepScore * 0.2) + (nutritionScore * 0.2) + (recoveryScore * 0.15) + (activityScore * 0.12) + (supplementScore * 0.08) + (workoutScore * 0.15) + (profileScore * 0.1));
+      const decisions = [];
+      const addDecision = (title, confidence, reason, effect) => decisions.push({ title, confidence, reason, effect });
+
+      if (!profile.goal || !profile.weight || !profile.activity) {
+        addDecision("Profil verisini tamamla", 96, "Hedef, kilo veya aktivite seviyesi eksik olduğunda beslenme ve performans karşılaştırmaları daha az kişiselleşir.", "Sonraki skorların ve trend yorumlarının daha iyi bağlama oturması beklenir.");
+      }
+      if (latestSignal.sleep === null || latestSignal.sleep === undefined) {
+        addDecision("Uyku sinyalini kaydet", 92, "Bugün için uyku kaydı olmadığı için toparlanma bileşeni varsayılan değerle hesaplandı.", "Günlük performans görünümünün daha güvenilir hale gelmesi beklenir.");
+      } else if (latestSignal.sleep < 7) {
+        addDecision("Toparlanma sinyalini izle", 78, `Kaydedilen uyku ${format(latestSignal.sleep)} saat. Motor, bunu ideal aralığın altında bir takip sinyali olarak işaretledi.`, "Antrenman yoğunluğunu kendi hislerin ve planınla birlikte değerlendirmene yardımcı olur.");
+      }
+      if (proteinReference && totals.protein < proteinReference * 0.8) {
+        addDecision("Protein kaydını tamamla", 82, `Bugün ${format(totals.protein)} g protein kaydı var; profil kilona göre takip referansı yaklaşık ${format(proteinReference)} g.`, "Gün içi beslenme dağılımını hedefinle karşılaştırman kolaylaşır.");
+      } else if (!todayFoods.length) {
+        addDecision("Beslenme kayıtlarını ekle", 90, "Bugün için besin kaydı görünmüyor; enerji ve makro bileşenleri bu nedenle düşük güvenle değerlendirilir.", "Karar motorunun beslenme ve antrenman bağlamını daha iyi kurması beklenir.");
+      }
+      if (latestSignal.hrv && priorHrv && latestSignal.hrv < priorHrv * 0.85) {
+        addDecision("Toparlanma trendini karşılaştır", 73, `Bugünkü HRV (${format(latestSignal.hrv)} ms), son günlerdeki ortalamanın altında görünüyor.`, "Kendi antrenman yükü ve yaşam ritmi notlarınla birlikte trendi izlemene yardımcı olur.");
+      }
+      if (todayWorkouts.length && latestSignal.sleep && latestSignal.sleep < 6.5) {
+        addDecision("Antrenman yükünü bağlama al", 76, `Bugün ${todayWorkouts.length} hareket kaydı ve ${format(latestSignal.sleep)} saat uyku görünüyor.`, "Seansın algılanan zorluğunu ve sonraki günün kayıtlarını karşılaştırmana yardımcı olur.");
+      }
+      const recentSupplementDays = new Set(supplements.filter((item) => isWithinDays(item.date, 7)).map((item) => item.date)).size;
+      if (recentSupplementDays && recentSupplementDays < 4) {
+        addDecision("Supplement kayıt düzenini gözden geçir", 66, `Son 7 günde ${recentSupplementDays} farklı gün supplement kaydı var. Bu yalnızca kayıt tutarlılığı sinyalidir.`, "Kendi kullanım düzenini görünür kılmana yardımcı olur; doz veya tıbbi öneri içermez.");
+      }
+      const recentVolume = workouts.filter((item) => isWithinDays(item.date, 14)).reduce((sum, item) => sum + volume(item), 0);
+      const priorVolume = workouts.filter((item) => isBetweenDays(item.date, 14, 27)).reduce((sum, item) => sum + volume(item), 0);
+      if (recentVolume && priorVolume && recentVolume < priorVolume * 0.8) {
+        addDecision("Antrenman hacmi trendini kontrol et", 71, `Son 14 gün hacmi (${format(recentVolume)} kg), önceki 14 günlük dönemin altında.`, "Planlı dinlenme veya program değişikliği gibi bağlamsal notları trendle birlikte değerlendirmeni sağlar.");
+      }
+      if (!decisions.length) {
+        addDecision("Kayıt ritmi dengeli", 68, "Bugünkü kayıtlar ana bileşenlerde belirgin bir eksik sinyal üretmedi.", "Veri biriktikçe haftalık trend ve hedefe yakınlık yorumları daha anlamlı hale gelir.");
+      }
+      return { score, components: { sleepScore, nutritionScore, recoveryScore, activityScore, supplementScore, workoutScore, profileScore }, decisions: decisions.slice(0, 5) };
+    }
+
+    function renderDashboardCoach() {
+      const engine = buildDecisionEngine();
+      const next = engine.decisions[0];
+      const message = next ? `${next.reason} Bir sonraki adım: ${next.title.toLocaleLowerCase("tr-TR")}.` : "Günün kayıtlarını ekledikçe daha kişisel bir sonraki adım oluşturacağım.";
+      $("#dashboardPerformanceScore").textContent = `${engine.score}`;
+      $("#dashboardCoachTitle").textContent = engine.score >= 80 ? "Ritmin iyi, odağını koru" : engine.score >= 60 ? "Bugün bir küçük adımla dengeyi güçlendir" : "Önce en etkili eksik kaydı tamamlayalım";
+      $("#dashboardCoachMessage").textContent = message;
+      $("#dashboardDecisionList").innerHTML = engine.decisions.slice(0, 3).map((decision) => `<article class="decision-card"><h3>${escapeHtml(decision.title)}</h3><div class="decision-meta">Güven: ${decision.confidence}/100 · Sonraki adım</div><p><strong>Neden:</strong> ${escapeHtml(decision.reason)}</p><p><strong>Katkısı:</strong> ${escapeHtml(decision.effect)}</p></article>`).join("");
+    }
+
+    function renderHomeDashboard() {
+      const todaysFoods = foods.filter((food) => (food.date || today) === today);
+      const todaysSupplements = supplements.filter((item) => item.date === today);
+      const todaysWorkouts = workouts.filter((item) => item.date === today);
+      const nutritionTotals = {
+        calories: Math.round(sum(todaysFoods, "calories")),
+        protein: sum(todaysFoods, "protein"),
+        carbs: sum(todaysFoods, "carbs"),
+        fat: sum(todaysFoods, "fat")
+      };
+      const supplementGrams = sum(todaysSupplements.filter((item) => item.unit === "g"), "dose");
+      const workoutTotals = summarize(todaysWorkouts);
+      const workoutFocus = todaysWorkouts.length ? topMuscle(todaysWorkouts) : "Yok";
+      const engine = buildDecisionEngine();
+
+      $("#homeDashboardCards").innerHTML = [
+        ["Performans", `${engine.score}/100`, "günlük görünüm"],
+        ["Kalori", format(nutritionTotals.calories), "kcal"],
+        ["Protein", format(nutritionTotals.protein), "g"],
+        ["Supplement", todaysSupplements.length, "kayıt"],
+        ["Supplement gram", format(supplementGrams), "g"],
+        ["Antrenman", todaysWorkouts.length, "hareket"],
+        ["Volume", format(workoutTotals.volume), "kg"],
+        ["Odak", workoutFocus, "kas grubu"],
+        ["Toplam kayıt", todaysFoods.length + todaysSupplements.length + todaysWorkouts.length, "bugün"]
+      ].map(([label, value, suffix]) => `<div class="metric"><span>${label}</span><strong>${value}</strong><small>${suffix}</small></div>`).join("");
+
+      $("#homeTodayCards").innerHTML = [
+        ["Beslenme", `${todaysFoods.length} kayıt`, `${format(nutritionTotals.carbs)} g karbonhidrat · ${format(nutritionTotals.fat)} g yağ`],
+        ["Supplement", `${todaysSupplements.length} kayıt`, `${format(supplementGrams)} g gram bazlı kullanım`],
+        ["Antrenman", `${todaysWorkouts.length} hareket`, `${format(workoutTotals.sets)} set · ${format(workoutTotals.reps)} tekrar`]
+      ].map(([label, value, detail]) => `<div class="mini-card"><span>${label}</span><strong>${value}</strong><span>${detail}</span></div>`).join("");
+
+      const recentLimit = window.matchMedia("(max-width: 560px)").matches ? 5 : 8;
+      const recent = [
+        ...foods.map((item) => ({ type: "Beslenme", name: item.name, date: item.date || today, detail: `${format(item.calories)} kcal · ${format(item.protein)} g protein` })),
+        ...supplements.map((item) => ({ type: "Supplement", name: item.name, date: item.date, detail: `${format(item.dose)} ${item.unit} · ${item.category}` })),
+        ...workouts.map((item) => ({ type: "Antrenman", name: item.exercise, date: item.date, detail: `${item.muscle} · ${format(volume(item))} kg volume` }))
+      ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, recentLimit);
+
+      $("#homeRecentRows").innerHTML = recent.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.type)}</td>
+          <td class="strong">${escapeHtml(item.name)}</td>
+          <td>${formatDate(item.date)}</td>
+          <td>${escapeHtml(item.detail)}</td>
+        </tr>`).join("");
+      $("#homeRecentWrap").style.display = recent.length ? "block" : "none";
+      $("#homeRecentEmpty").style.display = recent.length ? "none" : "grid";
+      $("#homeDashboardInsight").textContent = makeHomeInsight(nutritionTotals, todaysSupplements, todaysWorkouts);
+    }
+
+    function renderNutrition() {
+      const todaysFoods = foods.filter((food) => (food.date || today) === selectedFoodDate);
+      const totals = {
+        calories: Math.round(sum(todaysFoods, "calories")),
+        protein: sum(todaysFoods, "protein"),
+        carbs: sum(todaysFoods, "carbs"),
+        fat: sum(todaysFoods, "fat")
+      };
+      $("#totalCalories").textContent = format(totals.calories);
+      $("#totalProtein").textContent = format(totals.protein);
+      $("#totalCarbs").textContent = format(totals.carbs);
+      $("#totalFat").textContent = format(totals.fat);
+      $("#foodDate").value = selectedFoodDate;
+      $("#insight").textContent = makeNutritionInsight(todaysFoods, totals);
+      $("#foodRows").innerHTML = todaysFoods.map((food) => `
+        <tr>
+          <td class="strong">${escapeHtml(food.name)}</td>
+          <td>${format(food.calories)} kcal</td>
+          <td>${format(food.protein)} g</td>
+          <td>${format(food.carbs)} g</td>
+          <td>${format(food.fat)} g</td>
+          <td><div class="row-actions">
+            <button class="mini-btn edit-btn" type="button" data-edit-food="${food.id}" title="Düzenle"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+            <button class="mini-btn" type="button" data-remove-food="${food.id}" title="Sil"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div></td>
+        </tr>`).join("");
+      $("#emptyState").style.display = todaysFoods.length ? "none" : "grid";
+      $("#tableWrap").style.display = todaysFoods.length ? "block" : "none";
+    }
+
+    function renderSupplement() {
+      const dayItems = supplements.filter((item) => item.date === selectedSupplementDate);
+      const gramItems = dayItems.filter((item) => item.unit === "g");
+      const grams = sum(gramItems, "dose");
+      const proteinGrams = dayItems
+        .filter((item) => item.unit === "g" && /protein|whey|kazein/i.test(item.name))
+        .reduce((total, item) => total + item.dose, 0);
+      const creatineGrams = dayItems
+        .filter((item) => item.unit === "g" && /kreatin|creatine/i.test(item.name))
+        .reduce((total, item) => total + item.dose, 0);
+
+      $("#supplementDate").value = selectedSupplementDate;
+      $("#supplementCount").textContent = dayItems.length;
+      $("#supplementGrams").textContent = format(grams);
+      $("#supplementProtein").textContent = format(proteinGrams);
+      $("#supplementCreatine").textContent = format(creatineGrams);
+      $("#supplementInsight").textContent = makeSupplementInsight(dayItems, proteinGrams, creatineGrams);
+
+      $("#supplementRows").innerHTML = dayItems.map((item) => `
+        <tr>
+          <td class="strong">${escapeHtml(item.name)}</td>
+          <td>${escapeHtml(item.category)}</td>
+          <td>${format(item.dose)} ${escapeHtml(item.unit)}</td>
+          <td>${escapeHtml(item.timing || "Belirtilmedi")}</td>
+          <td>${escapeHtml(item.note || "-")}</td>
+          <td><div class="row-actions">
+            <button class="mini-btn edit-btn" type="button" data-edit-supplement="${item.id}" title="Düzenle"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+            <button class="mini-btn" type="button" data-remove-supplement="${item.id}" title="Sil"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div></td>
+        </tr>`).join("");
+
+      $("#supplementEmpty").style.display = dayItems.length ? "none" : "grid";
+      $("#supplementTableWrap").style.display = dayItems.length ? "block" : "none";
+      renderSupplementHistory();
+    }
+
+    function renderSupplementHistory() {
+      $("#supplementHistory").innerHTML = lastNDays(7).map((date) => {
+        const items = supplements.filter((item) => item.date === date);
+        const grams = sum(items.filter((item) => item.unit === "g"), "dose");
+        return `<div class="mini-card">
+          <span>${formatDate(date)}</span>
+          <strong>${items.length} kayıt</strong>
+          <span>${format(grams)} g toplam</span>
+        </div>`;
+      }).join("");
+    }
+
+    function renderWorkoutDashboard() {
+      const stats = getWorkoutStats();
+      $("#workoutDashboard").innerHTML = [
+        ["Bu hafta", stats.weeklyDays, "antrenman günü"],
+        ["Bu ay", stats.monthlyDays, "antrenman günü"],
+        ["Toplam hareket", workouts.length, "kayıt"],
+        ["Toplam set", stats.totalSets, "set"],
+        ["Toplam volume", format(stats.totalVolume), "kg"],
+        ["En çok kas", stats.topMuscle || "Yok", "kas grubu"],
+        ["En sık hareket", stats.topExercise || "Yok", "hareket"],
+        ["Son antrenman", stats.lastDate ? formatDate(stats.lastDate) : "Yok", "tarih"]
+      ].map(([label, value, suffix]) => `<div class="metric"><span>${label}</span><strong>${value}</strong><small>${suffix}</small></div>`).join("");
+      $("#workoutInsight").textContent = makeWorkoutInsight(stats);
+    }
+
+    function renderWorkoutDay() {
+      const items = workouts.filter((item) => item.date === selectedWorkoutDate);
+      const totals = summarize(items);
+      $("#workoutDate").value = selectedWorkoutDate;
+      $("#dayExercises").textContent = items.length;
+      $("#daySets").textContent = format(totals.sets);
+      $("#dayReps").textContent = format(totals.reps);
+      $("#dayVolume").textContent = format(totals.volume);
+      $("#workoutRows").innerHTML = items.map((item) => `
+        <tr>
+          <td class="strong">${escapeHtml(item.exercise)}</td>
+          <td>${escapeHtml(item.muscle)}</td>
+          <td>${format(item.sets)}</td>
+          <td>${format(item.reps)}</td>
+          <td>${format(item.weight)}</td>
+          <td>${format(volume(item))} kg</td>
+          <td>${escapeHtml(item.note || "-")}</td>
+          <td><div class="row-actions">
+            <button class="mini-btn edit-btn" type="button" data-edit-workout="${item.id}" title="Düzenle"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+            <button class="mini-btn" type="button" data-remove-workout="${item.id}" title="Sil"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div></td>
+        </tr>`).join("");
+      $("#workoutEmpty").style.display = items.length ? "none" : "grid";
+      $("#workoutTableWrap").style.display = items.length ? "block" : "none";
+    }
+
+    function renderCalendar() {
+      const start = startOfMonth(new Date(selectedWorkoutDate));
+      const firstOffset = (start.getDay() + 6) % 7;
+      const cursor = new Date(start);
+      cursor.setDate(cursor.getDate() - firstOffset);
+      const html = dayNames.map((day) => `<div class="calendar-head">${day.slice(0, 3)}</div>`).join("");
+      const days = [];
+      for (let i = 0; i < 42; i += 1) {
+        const key = toDateKey(cursor);
+        const items = workouts.filter((item) => item.date === key);
+        const top = topMuscle(items);
+        days.push(`<button class="calendar-day ${cursor.getMonth() !== start.getMonth() ? "muted" : ""} ${key === selectedWorkoutDate ? "active" : ""}" type="button" data-calendar-date="${key}">
+          <strong>${cursor.getDate()}</strong><span>${items.length ? `${items.length} hareket<br>${escapeHtml(top)}` : "Dinlenme"}</span>
+        </button>`);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      $("#calendar").innerHTML = html + days.join("");
+      document.querySelectorAll("[data-calendar-date]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedWorkoutDate = button.dataset.calendarDate;
+          renderAll();
+        });
+      });
+    }
+
+    function renderMuscleAnalysis() {
+      const thisWeek = workouts.filter((item) => isWithinDays(item.date, 7));
+      const lastWeek = workouts.filter((item) => isBetweenDays(item.date, 8, 14));
+      const last30 = workouts.filter((item) => isWithinDays(item.date, 30));
+      const maxSets = Math.max(1, ...muscleGroups.map((group) => sumByMuscle(thisWeek, group, "sets")));
+      $("#muscleBars").innerHTML = muscleGroups.map((group, index) => {
+        const weekSets = sumByMuscle(thisWeek, group, "sets");
+        const prevSets = sumByMuscle(lastWeek, group, "sets");
+        const monthSets = sumByMuscle(last30, group, "sets");
+        const width = Math.round((weekSets / maxSets) * 100);
+        const color = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "var(--chart-6)", "var(--rose)"][index % 7];
+        return `<div class="bar-row">
+          <div class="bar-head"><strong>${group}</strong><span>Bu hafta: ${format(weekSets)} set · Geçen hafta: ${format(prevSets)} · 30 gün: ${format(monthSets)}</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${width}%;background:${color}"></div></div>
+        </div>`;
+      }).join("");
+    }
+
+    function renderProgress() {
+      const stats = getWorkoutStats();
+      $("#weeklyCount").textContent = stats.weeklyDays;
+      $("#monthlyCount").textContent = stats.monthlyDays;
+      $("#allSets").textContent = format(stats.totalSets);
+      $("#avgDuration").textContent = format(stats.avgDuration);
+      drawBarChart("#volumeChart", lastNDays(14).map((date) => ({ label: date.slice(5), value: summarize(workouts.filter((item) => item.date === date)).volume })), "Volume");
+    }
+
+    function renderWeeklySplit() {
+      const weekDates = currentWeekDates();
+      $("#weeklySplit").innerHTML = weekDates.map((date, index) => {
+        const items = workouts.filter((item) => item.date === date);
+        return `<div class="day-chip"><strong>${dayNames[index]}</strong><span>${items.length ? escapeHtml(topMuscle(items)) : "Dinlenme"}<br>${items.length ? `${items.length} hareket` : ""}</span></div>`;
+      }).join("");
+    }
+
+    function renderPrs() {
+      const grouped = groupBy(workouts, (item) => normalize(item.exercise));
+      const cards = Object.values(grouped).map((items) => {
+        const sortedByDate = [...items].sort((a, b) => a.date.localeCompare(b.date));
+        const bestWeight = Math.max(...items.map((item) => item.weight));
+        const bestVolume = Math.max(...items.map(volume));
+        const previousBest = sortedByDate.slice(0, -1).reduce((best, item) => Math.max(best, item.weight), 0);
+        const latest = sortedByDate.at(-1);
+        const delta = latest ? latest.weight - previousBest : 0;
+        return { name: items[0].exercise, bestWeight, bestVolume, delta };
+      }).sort((a, b) => b.bestVolume - a.bestVolume).slice(0, 8);
+
+      $("#prList").innerHTML = cards.length ? cards.map((item) => `
+        <div class="pr-card">
+          <span>${escapeHtml(item.name)}</span>
+          <strong>${format(item.bestWeight)} kg</strong>
+          <span>En yüksek volume: ${format(item.bestVolume)} kg</span>
+          <span>Son gelişim: ${item.delta > 0 ? "+" : ""}${format(item.delta)} kg</span>
+        </div>`).join("") : `<div class="empty">PR hesaplamak için en az bir hareket ekle.</div>`;
+    }
+
+    function renderTrendSelect() {
+      const select = $("#trendExercise");
+      const current = select.value;
+      const names = [...new Map(workouts.map((item) => [normalize(item.exercise), item.exercise])).values()].sort((a, b) => a.localeCompare(b, "tr"));
+      select.innerHTML = names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+      if (names.includes(current)) select.value = current;
+      renderTrendChart();
+    }
+
+    function renderTrendChart() {
+      const selected = $("#trendExercise").value;
+      const points = workouts
+        .filter((item) => item.exercise === selected)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map((item) => ({ label: item.date.slice(5), value: item.weight }));
+      drawLineChart("#trendChart", points, selected ? "Ağırlık" : "Veri yok");
+    }
+
+    function renderNutritionWorkoutCombo() {
+      const todaysFoods = foods.filter((food) => (food.date || today) === today);
+      const todaysWorkouts = workouts.filter((item) => item.date === today);
+      const protein = sum(todaysFoods, "protein");
+      const calories = Math.round(sum(todaysFoods, "calories"));
+      const workoutSummary = todaysWorkouts.length ? `${topMuscle(todaysWorkouts)} · ${format(summarize(todaysWorkouts).volume)} kg` : "Yok";
+      $("#comboProtein").textContent = `${format(protein)} g`;
+      $("#comboCalories").textContent = `${format(calories)} kcal`;
+      $("#comboWorkout").textContent = workoutSummary;
+      $("#comboInsight").textContent = makeComboInsight(protein, calories, todaysWorkouts);
+    }
+
+    function renderFoodPresets() {
+      const select = $("#presetSelect");
+      select.innerHTML = '<option value="">Manuel giriş</option>';
+      const addGroup = (label, items, source) => {
+        if (!items.length) return;
+        const group = document.createElement("optgroup");
+        group.label = label;
+        items.forEach((food) => {
+          const option = document.createElement("option");
+          option.value = `${source}:${source === "custom" ? food.id : sortedPresets.indexOf(food)}`;
+          option.textContent = food.name;
+          group.appendChild(option);
+        });
+        select.appendChild(group);
+      };
+      addGroup("Kendi besinlerim", [...customFoods].filter(isFoodVisible).sort((a, b) => a.name.localeCompare(b.name, "tr")), "custom");
+      addGroup("Hazır besinler", sortedPresets.filter(isFoodVisible), "preset");
+    }
+
+    function saveCustomFood(food) {
+      const item = {
+        id: makeId(),
+        name: food.name.trim(),
+        calories: readNumber(food.calories),
+        protein: readNumber(food.protein),
+        carbs: readNumber(food.carbs),
+        fat: readNumber(food.fat),
+        servingAmount: readNumber(food.servingAmount) || 1,
+        servingUnit: food.servingUnit || "porsiyon"
+      };
+      const existingIndex = customFoods.findIndex((saved) => normalize(saved.name) === normalize(item.name));
+      if (existingIndex >= 0) item.id = customFoods[existingIndex].id;
+      if (existingIndex >= 0) customFoods.splice(existingIndex, 1, item);
+      else customFoods.push(item);
+      save(STORE.customFoods, customFoods);
+      renderFoodPresets();
+    }
+
+    function makeFoodReference(food, source = "Hazır besin") {
+      const serving = getServingFromFood(food);
+      return {
+        name: food.name,
+        calories: readNumber(food.calories),
+        protein: readNumber(food.protein),
+        carbs: readNumber(food.carbs),
+        fat: readNumber(food.fat),
+        servingAmount: serving.amount,
+        servingUnit: serving.unit,
+        source
+      };
+    }
+
+    function getServingFromFood(food) {
+      if (food.servingAmount && food.servingUnit) return { amount: food.servingAmount, unit: food.servingUnit };
+      const name = normalize(food.name);
+      const quantity = name.match(/(\d+(?:[.,]\d+)?)\s*(g|gr|ml)\b/);
+      if (quantity) return { amount: Number(quantity[1].replace(",", ".")), unit: quantity[2] === "ml" ? "ml" : "g" };
+      if (name.includes("yarım")) return { amount: 0.5, unit: "porsiyon" };
+      if (name.match(/\b\d+\s*(adet|dilim|ölçek)\b/)) return { amount: 1, unit: "porsiyon" };
+      return { amount: 1, unit: "porsiyon" };
+    }
+
+    function findFoodMatches(input) {
+      const query = normalize(input);
+      if (query.length < 2) return [];
+      const regular = [...customFoods, ...sortedPresets]
+        .filter(isFoodVisible)
+        .map((food) => makeFoodReference(food, customFoods.includes(food) ? "Kendi besinin" : "Hazır besin"));
+      const assisted = aiFoodLibrary.map((food) => ({
+        name: food.name || food.terms[0],
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        servingAmount: 100,
+        servingUnit: "g",
+        terms: food.terms,
+        source: "Yaklaşık 100 g"
+      }));
+      const matches = [...assisted, ...regular].filter((food) => {
+        if (!isFoodVisible(food)) return false;
+        const terms = [normalize(food.name), ...(food.terms || [])];
+        return terms.some((term) => term.includes(query) || query.includes(term));
+      });
+      const unique = new Map();
+      matches.forEach((food) => {
+        const key = normalize(food.name);
+        if (!unique.has(key)) unique.set(key, food);
+      });
+      return [...unique.values()].slice(0, 8);
+    }
+
+    function isFoodVisible(food) {
+      return !hiddenFoodNames.includes(normalize(food.name));
+    }
+
+    function renderFoodManager() {
+      const list = $("#foodManagerList");
+      const query = normalize($("#foodManagerSearch").value);
+      const items = [
+        ...customFoods.map((food) => ({ food, kind: "custom", label: "Kendi besinin" })),
+        ...sortedPresets.map((food) => ({ food, kind: "preset", label: "Hazır besin" })),
+        ...aiFoodLibrary.map((food) => ({ food: { ...food, name: food.name || food.terms[0] }, kind: "assisted", label: "Yaklaşık değer" }))
+      ].filter(({ food }) => !query || normalize(food.name).includes(query));
+      list.innerHTML = "";
+      if (!items.length) {
+        list.innerHTML = '<p class="field-hint">Eşleşen besin bulunamadı.</p>';
+        return;
+      }
+      items.slice(0, 60).forEach(({ food, kind, label }) => {
+        const row = document.createElement("div");
+        row.className = "food-manager-row";
+        const text = document.createElement("div");
+        text.innerHTML = `<span>${escapeHtml(food.name)}</span><small>${label}${isFoodVisible(food) ? "" : " · Gizli"}</small>`;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = kind === "custom" ? "Sil" : isFoodVisible(food) ? "Listeden kaldır" : "Geri ekle";
+        button.addEventListener("click", () => updateFoodList(food, kind));
+        row.append(text, button);
+        list.appendChild(row);
+      });
+    }
+
+    function updateFoodList(food, kind) {
+      const nameKey = normalize(food.name);
+      if (kind === "custom") {
+        if (!confirm(`“${food.name}” kendi besinlerinden silinsin mi?`)) return;
+        customFoods = customFoods.filter((item) => item.id !== food.id);
+        save(STORE.customFoods, customFoods);
+      } else if (hiddenFoodNames.includes(nameKey)) {
+        hiddenFoodNames = hiddenFoodNames.filter((name) => name !== nameKey);
+        save(STORE.hiddenFoods, hiddenFoodNames);
+      } else {
+        hiddenFoodNames.push(nameKey);
+        save(STORE.hiddenFoods, hiddenFoodNames);
+      }
+      if (activeFoodReference && normalize(activeFoodReference.name) === nameKey) activeFoodReference = null;
+      renderFoodPresets();
+      renderFoodMatches();
+      renderFoodManager();
+    }
+
+    function renderFoodMatches(showEmpty = false) {
+      const list = $("#foodMatches");
+      const matches = findFoodMatches($("#name").value);
+      list.innerHTML = "";
+      if (!matches.length) {
+        if (showEmpty) $("#nutritionSuggestionStatus").textContent = "Eşleşme bulunamadı. Adı biraz daha ayrıntılı yazabilir veya değerleri manuel girebilirsin.";
+        return;
+      }
+      $("#nutritionSuggestionStatus").textContent = "Aşağıdaki olasılıklardan birini seç. Miktarı sonraki alanda değiştirebilirsin.";
+      matches.forEach((food) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "food-match";
+        button.innerHTML = `<span>${escapeHtml(food.name)}</span><small>${format(food.servingAmount)} ${escapeHtml(food.servingUnit)} · ${format(food.calories)} kcal</small>`;
+        button.addEventListener("click", () => selectFoodReference(food));
+        list.appendChild(button);
+      });
+    }
+
+    function selectFoodReference(reference) {
+      activeFoodReference = reference;
+      $("#name").value = reference.name;
+      $("#foodAmount").value = reference.servingAmount;
+      $("#foodUnit").value = reference.servingUnit;
+      applySelectedAmount();
+      $("#foodMatches").innerHTML = "";
+      $("#nutritionSuggestionStatus").textContent = `${reference.source} seçildi. Miktarı değiştirerek değerleri yeniden hesaplayabilirsin.`;
+    }
+
+    function applySelectedAmount() {
+      if (!activeFoodReference || $("#foodUnit").value !== activeFoodReference.servingUnit) return;
+      const amount = readNumber($("#foodAmount").value);
+      if (!amount) return;
+      const ratio = amount / activeFoodReference.servingAmount;
+      $("#calories").value = Math.round(activeFoodReference.calories * ratio);
+      $("#protein").value = Math.round(activeFoodReference.protein * ratio * 10) / 10;
+      $("#carbs").value = Math.round(activeFoodReference.carbs * ratio * 10) / 10;
+      $("#fat").value = Math.round(activeFoodReference.fat * ratio * 10) / 10;
+    }
+
+    function fillFood(food) {
+      $("#name").value = food.name;
+      $("#calories").value = food.calories;
+      $("#protein").value = food.protein;
+      $("#carbs").value = food.carbs;
+      $("#fat").value = food.fat;
+    }
+
+    function editFood(food) {
+      editingFoodId = food.id;
+      selectedFoodDate = food.date || today;
+      $("#foodDate").value = selectedFoodDate;
+      $("#presetSelect").value = "";
+      fillFood(food);
+      $("#foodAmount").value = food.servingAmount || "";
+      $("#foodUnit").value = food.servingUnit || "g";
+      activeFoodReference = null;
+      $("#saveCustomFood").checked = customFoods.some((item) => normalize(item.name) === normalize(food.name));
+      $("#foodSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Güncelle`;
+      $("#name").focus();
+    }
+
+    function resetFoodForm(keepDate = true) {
+      editingFoodId = "";
+      $("#foodForm").reset();
+      $("#foodDate").value = keepDate ? selectedFoodDate : today;
+      $("#foodMatches").innerHTML = "";
+      activeFoodReference = null;
+      $("#nutritionSuggestionStatus").textContent = "Besin adını yaz, olası seçeneklerden birini seç ve miktarı ayrı gir.";
+      if (!keepDate) selectedFoodDate = today;
+      $("#foodSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ekle`;
+    }
+
+    function fillExercise(exercise) {
+      $("#exerciseName").value = exercise.name;
+      $("#muscleGroup").value = exercise.muscle;
+    }
+
+    function editWorkout(item) {
+      editingWorkoutId = item.id;
+      selectedWorkoutDate = item.date || today;
+      $("#workoutDate").value = selectedWorkoutDate;
+      $("#exercisePreset").value = "";
+      $("#exerciseName").value = item.exercise;
+      $("#muscleGroup").value = item.muscle;
+      $("#sets").value = item.sets;
+      $("#reps").value = item.reps;
+      $("#weight").value = item.weight;
+      $("#duration").value = item.duration || "";
+      $("#workoutNote").value = item.note || "";
+      $("#workoutSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Güncelle`;
+      $("#exerciseName").focus();
+    }
+
+    function resetWorkoutForm(keepDate = true) {
+      editingWorkoutId = "";
+      $("#workoutForm").reset();
+      $("#workoutDate").value = keepDate ? selectedWorkoutDate : today;
+      if (!keepDate) selectedWorkoutDate = today;
+      $("#workoutSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Hareket ekle`;
+    }
+
+    function fillSupplement(item) {
+      $("#supplementName").value = item.name;
+      $("#supplementCategory").value = item.category;
+      $("#supplementUnit").value = item.unit;
+    }
+
+    function editSupplement(item) {
+      editingSupplementId = item.id;
+      selectedSupplementDate = item.date || today;
+      $("#supplementDate").value = selectedSupplementDate;
+      $("#supplementPreset").value = "";
+      $("#supplementName").value = item.name;
+      $("#supplementCategory").value = item.category;
+      $("#supplementDose").value = item.dose;
+      $("#supplementUnit").value = item.unit;
+      $("#supplementTiming").value = item.timing || "Belirtilmedi";
+      $("#supplementNote").value = item.note || "";
+      $("#supplementSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Güncelle`;
+      $("#supplementName").focus();
+    }
+
+    function resetSupplementForm(keepDate = true) {
+      editingSupplementId = "";
+      $("#supplementForm").reset();
+      $("#supplementDate").value = keepDate ? selectedSupplementDate : today;
+      if (!keepDate) selectedSupplementDate = today;
+      $("#supplementSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ekle`;
+    }
+
+    function makeHomeInsight(nutritionTotals, todaysSupplements, todaysWorkouts) {
+      const comments = [];
+      if (nutritionTotals.calories || nutritionTotals.protein) {
+        comments.push(`Bugün ${format(nutritionTotals.calories)} kcal ve ${format(nutritionTotals.protein)} g protein kaydın var.`);
+      } else {
+        comments.push("Bugün henüz beslenme kaydı yok.");
+      }
+      if (todaysSupplements.length) {
+        comments.push(`${todaysSupplements.length} supplement/vitamin kaydı takip ediliyor.`);
+      }
+      if (todaysWorkouts.length) {
+        comments.push(`Antrenman tarafında ${todaysWorkouts.length} hareket ve ${format(summarize(todaysWorkouts).volume)} kg volume görünüyor.`);
+      }
+      if (!todaysSupplements.length && !todaysWorkouts.length) {
+        comments.push("Supplement ve antrenman kayıtları eklendikçe bu ekran günün tamamını birlikte gösterecek.");
+      }
+      return `${comments.join(" ")} Bu yorum yalnızca genel takip amaçlıdır.`;
+    }
+
+    function makeNutritionInsight(items, totals) {
+      if (!items.length) return "Henüz besin eklenmedi. Gün içinde birkaç öğünü girdikçe daha anlamlı bir genel yorum oluşur.";
+      const proteinShare = totals.calories ? (totals.protein * 4) / totals.calories : 0;
+      const fatShare = totals.calories ? (totals.fat * 9) / totals.calories : 0;
+      const comments = [];
+      comments.push(totals.calories < 500 ? "Kayıtlar şu an hafif görünüyor; gün ilerledikçe öğünlerini eklemeye devam edebilirsin." : "Bugünkü enerji kaydın takip edilebilir bir görünümde.");
+      comments.push(proteinShare < 0.12 ? "Protein oranı düşük kalmış olabilir; farklı protein kaynaklarını değerlendirebilirsin." : "Protein katkısı günün toplamında görünür durumda.");
+      if (fatShare > 0.4) comments.push("Yağ oranı belirginleşmiş; ek yağlar ve soslar toplamı hızlı artırabilir.");
+      return comments.join(" ");
+    }
+
+    function makeSupplementInsight(items, proteinGrams, creatineGrams) {
+      if (!items.length) return "Henüz supplement veya vitamin kaydı yok. Günlük kullandığın ürünleri doz ve birimle ekleyebilirsin.";
+      const comments = [];
+      const vitaminCount = items.filter((item) => item.category === "Vitamin" || item.category === "Mineral").length;
+      if (proteinGrams > 0) comments.push(`Bugün protein supplement kaydın ${format(proteinGrams)} g görünüyor.`);
+      if (creatineGrams > 0) comments.push(`Kreatin kaydın ${format(creatineGrams)} g olarak takip edildi.`);
+      if (vitaminCount > 0) comments.push(`${vitaminCount} vitamin/mineral kaydı var.`);
+      comments.push("Bu ekran yalnızca kullanım alışkanlığını takip eder; doz önerisi veya tıbbi yönlendirme yapmaz.");
+      return comments.join(" ");
+    }
+
+    function makeWorkoutInsight(stats) {
+      if (!workouts.length) return "Henüz antrenman kaydı yok. İlk hareketi eklediğinde haftalık dağılım ve PR analizleri oluşacak.";
+      const comments = [];
+      if (stats.weeklyDays >= 3) comments.push("Antrenman sıklığın bu hafta istikrarlı görünüyor.");
+      if (stats.topMuscle) comments.push(`Bu dönem en çok ${stats.topMuscle} çalışmışsın.`);
+      const legs = sumByMuscle(workouts.filter((item) => isWithinDays(item.date, 30)), "Bacak", "sets");
+      const chestBack = sumByMuscle(workouts.filter((item) => isWithinDays(item.date, 30)), "Göğüs", "sets") + sumByMuscle(workouts.filter((item) => isWithinDays(item.date, 30)), "Sırt", "sets");
+      if (chestBack > 0 && legs < chestBack * 0.35) comments.push("Son 30 günde bacak hacmi üst vücuda göre düşük görünüyor.");
+      if (stats.improvingExercise) comments.push(`Son kayıtlarda ${stats.improvingExercise} performansın artış göstermiş.`);
+      return comments.join(" ");
+    }
+
+    function makeComboInsight(protein, calories, todaysWorkouts) {
+      if (!todaysWorkouts.length) return "Bugün antrenman kaydı yok; beslenme ve spor ilişkisi için hareket ekleyebilirsin.";
+      const vol = summarize(todaysWorkouts).volume;
+      if (protein >= 120 && vol >= 8000) return "Bugünkü protein alımın yüksek hacimli antrenmanını destekleyecek seviyede görünüyor. Bu yalnızca genel bilgilendirme yorumudur.";
+      if (protein < 70 && vol >= 8000) return "Bugünkü antrenman hacmin yüksek; protein kaydın görece düşük görünüyor. Bu yorum tıbbi tavsiye değildir.";
+      return `Bugün ${topMuscle(todaysWorkouts)} odaklı antrenman ve ${format(calories)} kcal kayıtlı. Genel dengeyi gün sonuna kadar takip edebilirsin.`;
+    }
+
+    function getWorkoutStats() {
+      const totalSets = sum(workouts, "sets");
+      const totalVolume = workouts.reduce((total, item) => total + volume(item), 0);
+      const weekDates = new Set(workouts.filter((item) => isWithinDays(item.date, 7)).map((item) => item.date));
+      const monthDates = new Set(workouts.filter((item) => isWithinDays(item.date, 30)).map((item) => item.date));
+      const topMuscleName = topKey(workouts, (item) => item.muscle);
+      const topExerciseName = topKey(workouts, (item) => normalize(item.exercise), (items) => items[0].exercise);
+      const lastDate = workouts.map((item) => item.date).sort().at(-1);
+      const durations = Object.values(groupBy(workouts.filter((item) => item.duration), (item) => item.date)).map((items) => Math.max(...items.map((item) => item.duration)));
+      return {
+        totalSets,
+        totalVolume,
+        weeklyDays: weekDates.size,
+        monthlyDays: monthDates.size,
+        topMuscle: topMuscleName,
+        topExercise: topExerciseName,
+        lastDate,
+        avgDuration: durations.length ? durations.reduce((a, b) => a + b, 0) / durations.length : 0,
+        improvingExercise: findImprovingExercise()
+      };
+    }
+
+    function findImprovingExercise() {
+      const grouped = groupBy(workouts, (item) => normalize(item.exercise));
+      for (const items of Object.values(grouped)) {
+        const sorted = [...items].sort((a, b) => a.date.localeCompare(b.date));
+        if (sorted.length >= 2 && sorted.at(-1).weight > sorted.at(-2).weight) return sorted.at(-1).exercise;
+      }
+      return "";
+    }
+
+    function summarize(items) {
+      return {
+        sets: sum(items, "sets"),
+        reps: items.reduce((total, item) => total + item.sets * item.reps, 0),
+        volume: items.reduce((total, item) => total + volume(item), 0)
+      };
+    }
+
+    function volume(item) {
+      return item.sets * item.reps * item.weight;
+    }
+
+    function drawBarChart(selector, points, label) {
+      const svg = $(selector);
+      const max = Math.max(1, ...points.map((point) => point.value));
+      const width = 720;
+      const height = 170;
+      const gap = 8;
+      const barWidth = (width - gap * (points.length + 1)) / points.length;
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.innerHTML = points.map((point, index) => {
+        const barHeight = Math.max(2, (point.value / max) * 116);
+        const x = gap + index * (barWidth + gap);
+        const y = 132 - barHeight;
+        const fill = `var(--chart-${(index % 6) + 1})`;
+        return `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="5" fill="${fill}"></rect><text x="${x + barWidth / 2}" y="154" text-anchor="middle" fill="var(--muted)" font-size="12">${point.label}</text>`;
+      }).join("") + `<text x="12" y="18" fill="var(--muted)" font-size="13">${label}</text>`;
+    }
+
+    function drawLineChart(selector, points, label) {
+      const svg = $(selector);
+      const width = 720;
+      const height = 170;
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      if (!points.length) {
+        svg.innerHTML = `<text x="20" y="86" fill="var(--muted)" font-size="15">Trend için hareket kaydı ekle.</text>`;
+        return;
+      }
+      const max = Math.max(1, ...points.map((point) => point.value));
+      const min = Math.min(...points.map((point) => point.value));
+      const range = Math.max(1, max - min);
+      const coords = points.map((point, index) => {
+        const x = 26 + (index * (width - 52)) / Math.max(1, points.length - 1);
+        const y = 130 - ((point.value - min) / range) * 96;
+        return { x, y, ...point };
+      });
+      const path = coords.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
+      svg.innerHTML = `<path d="${path}" fill="none" stroke="var(--coral)" stroke-width="4" stroke-linecap="round"></path>` +
+        coords.map((point, index) => `<circle cx="${point.x}" cy="${point.y}" r="5" fill="var(--chart-${(index % 6) + 1})"></circle><text x="${point.x}" y="154" text-anchor="middle" fill="var(--muted)" font-size="12">${point.label}</text>`).join("") +
+        `<text x="12" y="18" fill="var(--muted)" font-size="13">${label}</text>`;
+    }
+
+    function load(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
+    }
+
+    function save(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function readNumber(value) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+    }
+
+    function optionalNumber(value) {
+      return value === "" || value === null || value === undefined ? null : readNumber(value);
+    }
+
+    function optionalMetric(value, digits = 1) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "—";
+      if (digits === 0) return String(Math.round(number));
+      return format(number);
+    }
+
+    function sum(items, key) {
+      return items.reduce((total, item) => total + readNumber(item[key]), 0);
+    }
+
+    function sumByMuscle(items, muscle, key) {
+      return sum(items.filter((item) => item.muscle === muscle), key);
+    }
+
+    function topMuscle(items) {
+      return topKey(items, (item) => item.muscle) || "Dinlenme";
+    }
+
+    function topKey(items, keyFn, labelFn) {
+      const grouped = groupBy(items, keyFn);
+      const best = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)[0];
+      return best ? (labelFn ? labelFn(best[1]) : best[0]) : "";
+    }
+
+    function groupBy(items, keyFn) {
+      return items.reduce((groups, item) => {
+        const key = keyFn(item);
+        groups[key] = groups[key] || [];
+        groups[key].push(item);
+        return groups;
+      }, {});
+    }
+
+    function currentWeekDates() {
+      const date = new Date(today);
+      const offset = (date.getDay() + 6) % 7;
+      date.setDate(date.getDate() - offset);
+      return Array.from({ length: 7 }, (_, index) => {
+        const copy = new Date(date);
+        copy.setDate(date.getDate() + index);
+        return toDateKey(copy);
+      });
+    }
+
+    function lastNDays(count) {
+      return Array.from({ length: count }, (_, index) => {
+        const date = new Date(today);
+        date.setDate(date.getDate() - (count - index - 1));
+        return toDateKey(date);
+      });
+    }
+
+    function isWithinDays(dateKey, days) {
+      const diff = dayDiff(dateKey, today);
+      return diff >= 0 && diff < days;
+    }
+
+    function isBetweenDays(dateKey, min, max) {
+      const diff = dayDiff(dateKey, today);
+      return diff >= min && diff <= max;
+    }
+
+    function dayDiff(from, to) {
+      return Math.floor((new Date(to) - new Date(from)) / 86400000);
+    }
+
+    function startOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth(), 1);
+    }
+
+    function toDateKey(date) {
+      return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    }
+
+    function formatDate(dateKey) {
+      return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short" }).format(new Date(dateKey));
+    }
+
+    function format(value) {
+      const rounded = Math.round((Number(value) || 0) * 10) / 10;
+      return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+    }
+
+    function normalize(value) {
+      return value.trim().toLocaleLowerCase("tr-TR");
+    }
+
+    function makeId() {
+      return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    }
+  </script>
+</body>
+</html>

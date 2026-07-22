@@ -1,0 +1,9 @@
+{
+  "name": "Beslenme ve Antrenman",
+  "short_name": "Fit Takip",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7f4",
+  "theme_color": "#2d7d5a",
+  "lang": "tr"
+}
