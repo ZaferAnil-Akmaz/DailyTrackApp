@@ -1296,7 +1296,7 @@
 
         <section class="stack">
           <div class="panel">
-            <div class="panel-header"><h2 class="panel-title">Günlük sinyaller</h2><span class="twin-status">Günlük takip</span></div>
+            <div class="panel-header"><h2 class="panel-title">Günlük Hedefler</h2><span class="twin-status">Günlük takip</span></div>
             <div class="panel-body">
               <form id="bodySignalForm">
                 <div class="form-grid">
@@ -1308,7 +1308,7 @@
                   <label>Nabız<input id="signalHeartRate" type="number" min="0" step="1" placeholder="dinlenik bpm"></label>
                   <label>HRV<input id="signalHrv" type="number" min="0" step="1" placeholder="ms"></label>
                 </div>
-                <div class="button-row"><button class="btn primary" type="submit">Günlük sinyali kaydet</button></div>
+                <div class="button-row"><button class="btn primary" type="submit">Günlük hedefi kaydet</button></div>
               </form>
             </div>
           </div>
@@ -2276,9 +2276,9 @@
         addDecision("Profil verisini tamamla", 96, "Hedef, kilo veya aktivite seviyesi eksik olduğunda beslenme ve performans karşılaştırmaları daha az kişiselleşir.", "Sonraki skorların ve trend yorumlarının daha iyi bağlama oturması beklenir.");
       }
       if (latestSignal.sleep === null || latestSignal.sleep === undefined) {
-        addDecision("Uyku sinyalini kaydet", 92, "Bugün için uyku kaydı olmadığı için toparlanma bileşeni varsayılan değerle hesaplandı.", "Günlük performans görünümünün daha güvenilir hale gelmesi beklenir.");
+        addDecision("Uyku hedefiini kaydet", 92, "Bugün için uyku kaydı olmadığı için toparlanma bileşeni varsayılan değerle hesaplandı.", "Günlük performans görünümünün daha güvenilir hale gelmesi beklenir.");
       } else if (latestSignal.sleep < 7) {
-        addDecision("Toparlanma sinyalini izle", 78, `Kaydedilen uyku ${format(latestSignal.sleep)} saat. Motor, bunu ideal aralığın altında bir takip sinyali olarak işaretledi.`, "Antrenman yoğunluğunu kendi hislerin ve planınla birlikte değerlendirmene yardımcı olur.");
+        addDecision("Toparlanma hedefini izle", 78, `Kaydedilen uyku ${format(latestSignal.sleep)} saat. Motor, bunu ideal aralığın altında bir takip hedefi olarak işaretledi.`, "Antrenman yoğunluğunu kendi hislerin ve planınla birlikte değerlendirmene yardımcı olur.");
       }
       if (proteinReference && totals.protein < proteinReference * 0.8) {
         addDecision("Protein kaydını tamamla", 82, `Bugün ${format(totals.protein)} g protein kaydı var; profil kilona göre takip referansı yaklaşık ${format(proteinReference)} g.`, "Gün içi beslenme dağılımını hedefinle karşılaştırman kolaylaşır.");
@@ -2293,7 +2293,7 @@
       }
       const recentSupplementDays = new Set(supplements.filter((item) => isWithinDays(item.date, 7)).map((item) => item.date)).size;
       if (recentSupplementDays && recentSupplementDays < 4) {
-        addDecision("Supplement kayıt düzenini gözden geçir", 66, `Son 7 günde ${recentSupplementDays} farklı gün supplement kaydı var. Bu yalnızca kayıt tutarlılığı sinyalidir.`, "Kendi kullanım düzenini görünür kılmana yardımcı olur; doz veya tıbbi öneri içermez.");
+        addDecision("Supplement kayıt düzenini gözden geçir", 66, `Son 7 günde ${recentSupplementDays} farklı gün supplement kaydı var. Bu yalnızca kayıt tutarlılığı hedefidir.`, "Kendi kullanım düzenini görünür kılmana yardımcı olur; doz veya tıbbi öneri içermez.");
       }
       const recentVolume = workouts.filter((item) => isWithinDays(item.date, 14)).reduce((sum, item) => sum + volume(item), 0);
       const priorVolume = workouts.filter((item) => isBetweenDays(item.date, 14, 27)).reduce((sum, item) => sum + volume(item), 0);
@@ -2301,7 +2301,7 @@
         addDecision("Antrenman hacmi trendini kontrol et", 71, `Son 14 gün hacmi (${format(recentVolume)} kg), önceki 14 günlük dönemin altında.`, "Planlı dinlenme veya program değişikliği gibi bağlamsal notları trendle birlikte değerlendirmeni sağlar.");
       }
       if (!decisions.length) {
-        addDecision("Kayıt ritmi dengeli", 68, "Bugünkü kayıtlar ana bileşenlerde belirgin bir eksik sinyal üretmedi.", "Veri biriktikçe haftalık trend ve hedefe yakınlık yorumları daha anlamlı hale gelir.");
+        addDecision("Kayıt ritmi dengeli", 68, "Bugünkü kayıtlar ana bileşenlerde belirgin bir eksik hedef üretmedi.", "Veri biriktikçe haftalık trend ve hedefe yakınlık yorumları daha anlamlı hale gelir.");
       }
       return { score, components: { sleepScore, nutritionScore, recoveryScore, activityScore, supplementScore, workoutScore, profileScore }, decisions: decisions.slice(0, 5) };
     }
